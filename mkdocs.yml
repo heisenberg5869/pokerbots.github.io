@@ -1,0 +1,50 @@
+site_name: pokerbots
+site_description: Learn to solve poker, from Kuhn to custom variants
+site_url: https://heisenberg5869.github.io/pokerbots.github.io/
+repo_url: https://github.com/heisenberg5869/pokerbots.github.io
+theme:
+  name: material
+  features: [navigation.sections, navigation.top, content.code.copy, toc.follow]
+  palette:
+    - scheme: default
+      toggle: { icon: material/weather-night, name: Dark mode }
+    - scheme: slate
+      toggle: { icon: material/weather-sunny, name: Light mode }
+markdown_extensions:
+  - admonition
+  - tables
+  - toc: { permalink: true }
+  - pymdownx.arithmatex: { generic: true }
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.tabbed: { alternate_style: true }
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+nav:
+  - Home: index.md
+  - Roadmap: roadmap.md
+  - Reference:
+      - Notation: notation.md
+      - Glossary: glossary.md
+  - Foundations:
+      - 00 Prerequisites: modules/00_prereqs.md
+      - 01 Kuhn Poker: modules/01_kuhn.md
+      - 02 Regret Matching: modules/02_regret_matching.md
+  - Small solvable games:
+      - 03 Leduc Hold'em: modules/03_leduc.md
+      - 04 Expanded Leduc + MCCFR: modules/04_mccfr.md
+  - Real poker:
+      - 05 Limit Hold'em: modules/05_limit_holdem.md
+      - 06 Abstraction & Endgame: modules/06_abstraction_endgame.md
+      - 07 Heads-Up No-Limit: modules/07_nolimit.md
+  - Neural era:
+      - 08 Deep CFR: modules/08_deep_cfr.md
+      - 09 Value Nets & Search: modules/09_value_nets_search.md
+  - Hard frontier:
+      - 10 Pot-Limit Omaha: modules/10_plo.md
+      - 11 Multiplayer: modules/11_multiplayer.md
+      - 12 Opponent Modelling: modules/12_opponent_modelling.md
+  - Design your own:
+      - 13 Custom Variants: modules/13_variants.md
+      - 14 Case Studies: modules/14_case_studies.md

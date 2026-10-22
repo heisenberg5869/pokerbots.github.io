@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pokerbot"
+version = "0.1.0"
+description = "A step-by-step curriculum and library for solving poker, from Kuhn to custom variants"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "numpy>=1.24", "matplotlib>=3.7", "jupyter"]
+docs = ["mkdocs>=1.5,<2", "mkdocs-material>=9.5", "pymdown-extensions>=10"]
+deep = ["torch>=2.1", "numpy>=1.24"]
+
+[tool.setuptools.packages.find]
+include = ["pokerbot*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
