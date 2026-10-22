@@ -12,7 +12,7 @@
   canvas{width:100%;max-width:640px;height:240px;border:1px solid var(--line);border-radius:6px;display:block}
   .key span{margin-right:14px;font-weight:600} .mut{color:var(--mut);font-size:12px}
 </style></head><body>
-<div class="row key"><span style="color:var(--r)">■ Rock</span><span style="color:var(--p)">■ Paper</span><span style="color:var(--s)">■ Scissors</span></div>
+<div class="row key"><span style="color:var(--r)">■ Rock</span><span style="color:var(--p)">■ Paper</span><span style="color:var(--s)">■ Scissors</span><span class="mut" style="font-weight:400">thick = average strategy, thin = current strategy</span></div>
 <div class="row">
   <label>Opponent: P(Rock) <b id="vr">0.50</b><input id="r" type="range" min="0" max="100" value="50"></label>
   <label>Opponent: P(Paper) <b id="vp">0.30</b><input id="p" type="range" min="0" max="100" value="30"></label>
@@ -30,7 +30,7 @@ function strat(r){const p=r.map(x=>Math.max(x,0)),s=p[0]+p[1]+p[2];return s>0?p.
 function opp(){let a=+r.value/100,b=+p.value/100;if(a+b>1){b=1-a;}return [a,b,Math.max(0,1-a-b)];}
 function step(n){
   for(let k=0;k<n;k++){
-    const s1=strat(reg);for(let i=0;i<3;i++)sum[i]+=s1[i];
+    const s1=(t===0)?[0.6,0.2,0.2]:strat(reg);for(let i=0;i<3;i++)sum[i]+=s1[i];
     let s2; if(mode.value==="self"){s2=strat(reg2);for(let i=0;i<3;i++)sum2[i]+=s2[i];} else s2=opp();
     // expected utility of each of my actions vs opponent's strategy, and my current strategy's value
     const u=[0,1,2].map(i=>s2[0]*U[i][0]+s2[1]*U[i][1]+s2[2]*U[i][2]);
@@ -53,7 +53,12 @@ function draw(){
   for(let g=0;g<=4;g++){const y=H-30-(H-50)*g/4;ctx.beginPath();ctx.moveTo(50,y);ctx.lineTo(W-10,y);ctx.stroke();ctx.fillText((g/4).toFixed(2),4,y+7);}
   if(hist.length<2)return;
   const cols=[css("--r"),css("--p"),css("--s")],maxT=hist[hist.length-1].t;
-  for(let a=0;a<3;a++){
+  for(let a=0;a<3;a++){   // thin, faint: CURRENT strategy
+    ctx.strokeStyle=cols[a];ctx.globalAlpha=0.35;ctx.lineWidth=1.5;ctx.beginPath();
+    hist.forEach((h,i)=>{const x=50+(W-60)*h.t/maxT,y=H-30-(H-50)*h.cur[a];i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+  for(let a=0;a<3;a++){   // thick: AVERAGE strategy
     ctx.strokeStyle=cols[a];ctx.lineWidth=3;ctx.beginPath();
     hist.forEach((h,i)=>{const x=50+(W-60)*h.t/maxT,y=H-30-(H-50)*h.avg[a];i?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();
   }

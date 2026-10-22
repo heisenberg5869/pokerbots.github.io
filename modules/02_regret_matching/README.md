@@ -1,5 +1,9 @@
 # 02 · Regret Matching & No-Regret Learning
 
-Read the explanation: [`docs/modules/02_regret_matching.md`](../../docs/modules/02_regret_matching.md)
+Explanation: [`docs/modules/02_regret_matching.md`](../../docs/modules/02_regret_matching.md)
 
-Hands-on material (notebooks, exercises) goes in this folder.
+- `notebook.ipynb`: reproduce the worked example, plot current vs average strategy, regret vs the sqrt(T) bound, the 1/sqrt(T) rate, RM vs RM+ vs Hedge
+- `exercises/`: put your solutions here
+- Library code: `pokerbot/solvers/matrix_games.py` (learners, self-play, matrix exploitability), `pokerbot/solvers/regret_matching.py` (the per-information-set matcher CFR uses)
+- Browser demo: `docs/demos/regret_matching_rps.html`
+- Tests: `tests/test_regret_matching.py`

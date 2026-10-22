@@ -6,7 +6,7 @@ Status values: **planned → outline → in progress → draft → reviewed → 
 |---|---|---|---|---|---|---|
 | 00 | Prerequisites | outline | — | — | — | — |
 | 01 | Kuhn Poker | in progress | ✅ engine, CFR, exploitability | ✅ | ✅ | — |
-| 02 | Regret Matching | outline | ✅ `RegretMatcher` | — | — | ✅ RPS demo |
+| 02 | Regret Matching | draft | ✅ `RegretMatcher`, ✅ `matrix_games` (RM, RM+, Hedge) | ✅ | ✅ | ✅ RPS demo |
 | 03 | Leduc Hold'em | planned | — | — | — | — |
 | 04 | Expanded Leduc + MCCFR | planned | — | — | — | — |
 | 05 | Limit Hold'em | planned | — | — | — | — |
@@ -23,7 +23,7 @@ Status values: **planned → outline → in progress → draft → reviewed → 
 ## Phases
 
 - **Phase 0: skeleton** ✅ repo layout, notation, CI, docs site, module template, exact exploitability
-- **Phase 1: prove the template.** Finish modules 00–02 completely (explanation, notebook, demo, tests, exercises) and revise the template before replicating it
+- **Phase 1: prove the template.** Module 01 ✅ and 02 (draft) done; finish Module 00 (prerequisites), then revise the template before replicating it
 - **Phase 2: small solvable games.** Leduc, CFR+, expanded Leduc, MCCFR
 - **Phase 3: real poker.** hand evaluator, Limit, abstraction, endgame solving, heads-up No-Limit
 - **Phase 4: neural and frontier.** Deep CFR, value nets, PLO, multiplayer, opponent modelling
@@ -34,7 +34,7 @@ Status values: **planned → outline → in progress → draft → reviewed → 
 | Package | Contents (done ✅ / planned) |
 |---|---|
 | `games/` | ✅ `base`, ✅ `kuhn`; planned: leduc, limit, nolimit, plo, variants |
-| `solvers/` | ✅ `regret_matching`, ✅ `cfr`; planned: cfr_plus, mccfr, deep_cfr, resolve |
+| `solvers/` | ✅ `regret_matching`, ✅ `matrix_games`, ✅ `cfr`; planned: cfr_plus, mccfr, deep_cfr, resolve |
 | `eval/` | ✅ `exploitability` (exact best response); planned: hand_eval, local best response, tournaments |
 | `abstraction/` | planned: card buckets, action grids |
 | `viz/` | planned: plotting and widget helpers |
