@@ -7,7 +7,7 @@ This repo is a hands-on curriculum *and* a working code library. Every module ex
 motivates the next. By the end you will have built solvers for Kuhn, Leduc, Limit, No-Limit, Omaha, multiplayer
 games and your own custom variants.
 
-> **Status:** early. Modules 01 and 02 have working solver material; Module 03 now has a six-card Leduc engine, configurable CFR variants, a lesson, notebook and rules-level tests. Its interactive widgets and reference convergence cross-check are still in progress; see [`docs/roadmap.md`](docs/roadmap.md).
+> **Status:** early. Modules 01 and 02 have working solver material; Module 03 now has a six-card Leduc engine, configurable CFR variants, a lesson, notebook, rules-level tests and six browser labs. Its reference-solver cross-check is still in progress; see [`docs/roadmap.md`](docs/roadmap.md).
 
 ## The path
 

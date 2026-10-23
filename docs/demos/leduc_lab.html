@@ -68,6 +68,10 @@
         <label>Display<select id="heat-mode"><option value="stacked">Action probabilities</option><option value="bet">Probability of bet/raise</option><option value="diff">Difference from final snapshot</option></select></label>
       </div>
       <div class="table-wrap"><table class="matrix" id="heat-table"></table></div>
+      <details class="card" style="margin-top:14px"><summary><strong>Pair and board explorer</strong> · exact showdown equity against a random legal opponent card</summary>
+        <p class="small muted">Each cell removes your known private card and the public card before enumerating the opponent's remaining physical cards. This is showdown equity only; it ignores betting and action ranges.</p>
+        <div class="table-wrap"><table class="matrix" id="equity-table"></table></div>
+      </details>
       <div class="legend small" style="margin-top:10px"><span style="--color:var(--bar0)">Fold</span><span style="--color:var(--bar2)">Check/call</span><span style="--color:var(--bar1)">Bet</span><span style="--color:var(--bar3)">Raise</span></div>
       <p class="muted small">Each row is your private rank; columns are public-card ranks. Select a history to compare decisions at the same point in the hand. Strategy entries are probabilities, not chip values.</p>
     </div>
@@ -167,7 +171,7 @@ function init(){
   $("tree-footnote").textContent=`This implementation has ${DATA.manifest.node_count.toLocaleString()} state nodes and ${DATA.manifest.infoset_count_rank_symmetric} information sets after merging suit-symmetric decisions by rank. The plan's recalled 936 figure uses another convention and remains unverified here.`;
   $("provenance").textContent=`Generated from commit ${DATA.manifest.source_commit.slice(0,7)} · deterministic traversal, no random seed · budgets ${DATA.manifest.iterations.join(", ")} · ${DATA.manifest.strategy_note}`;
   ["heat-variant","belief-variant","reach-variant","play-variant"].forEach(id=>fillVariantSelect(id));
-  buildHistoryOptions();initHeat();initBelief();initReach();initRace();initPlay();
+  buildHistoryOptions();initHeat();drawEquity();initBelief();initReach();initRace();initPlay();
   ["tree-private","tree-board","tree-view"].forEach(id=>$(id).addEventListener("change",drawTree));drawTree();
 }
 function buildHistoryOptions(){
@@ -194,6 +198,15 @@ function drawHeat(){
     else if(mode==="diff"){const delta=p.reduce((s,x,i)=>s+Math.abs(x-(final?.[i]??x)),0)/2;html+=`<td><div class="bar"><div class="segment a-r" style="width:${Math.min(1,delta)*100}%">${delta.toFixed(3)} avg. abs. difference</div></div></td>`}
     else {html+=`<td class="heat"><div class="bar" title="${actions.map((a,i)=>`${actionLabel(a)}: ${p[i].toFixed(3)}`).join("; ")}">${actions.map((a,i)=>`<div class="segment a-${a}" style="width:${p[i]*100}%">${p[i]>.13?actionLabel(a)+" "+(p[i]*100).toFixed(0)+"%":""}</div>`).join("")}</div><span class="small muted">${actions.map((a,i)=>`${a}: ${p[i].toFixed(2)}`).join(" · ")}</span></td>`}
   }html+="</tr>"}html+="</tbody>";$("heat-table").innerHTML=html;
+}
+function drawEquity(){
+  const score=(privateRank,boardRank)=>privateRank===boardRank?10+privateRank:1+privateRank;
+  let html='<thead><tr><th>Your rank \\ Board</th>'+RANKS.map(r=>`<th>${r}</th>`).join('')+'</tr></thead><tbody>';
+  for(let own=0;own<3;own++){html+=`<tr><th>${RANKS[own]}</th>`;for(let board=0;board<3;board++){
+    const ownCard=own*2,boardCard=board*2+(own===board?1:0),remaining=[0,1,2,3,4,5].filter(c=>c!==ownCard&&c!==boardCard);let wins=0,ties=0,losses=0;
+    for(const card of remaining){const theirs=score(Math.floor(card/2),board);if(score(own,board)>theirs)wins++;else if(score(own,board)===theirs)ties++;else losses++}
+    const equity=(wins+ties/2)/remaining.length;html+=`<td>${own===board?'Pair':'High card'}<br><strong>${(equity*100).toFixed(1)}%</strong> equity<br><span class="small muted">W ${wins} · T ${ties} · L ${losses}</span></td>`
+  }html+='</tr>'}$("equity-table").innerHTML=html+'</tbody>';
 }
 function initBelief(){["belief-player","belief-own","belief-board","belief-history","belief-variant","belief-scrub","aggression"].forEach(id=>$(id).addEventListener("input",drawBelief));["belief-player","belief-own","belief-board","belief-history","belief-variant","belief-scrub"].forEach(id=>$(id).addEventListener("change",drawBelief));drawBelief()}
 function historyActions(h){return h.split("").filter(c=>"cfbr".includes(c))}
