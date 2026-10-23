@@ -21,7 +21,8 @@ def test_private_deal_and_board_chance_probabilities():
     assert all(prob == pytest.approx(1 / 4) for _, prob in boards)
     after_board = after_bet_check.child(boards[0][0])
     assert after_board.history == "cc/"
-    assert after_board.info_set_key(1).endswith("1:cc/")
+    assert after_board.current_player() == 0
+    assert after_board.info_set_key(0).endswith("1:cc/")
 
 
 def test_betting_actions_and_fold_payoff():
@@ -29,15 +30,23 @@ def test_betting_actions_and_fold_payoff():
     assert state.legal_actions() == ("c", "b")
     facing_bet = state.child("b")
     assert facing_bet.legal_actions() == ("f", "c", "r")
-    facing_reraise = facing_bet.child("r")
-    assert facing_reraise.legal_actions() == ("f", "c", "r")
-    cap_reached = facing_reraise.child("r")
+    reraised = facing_bet.child("r")
+    assert reraised.contributions == (3, 5)
+    assert reraised.round_bets == (2, 4)
+    cap_reached = facing_bet.child("r")
     assert cap_reached.legal_actions() == ("f", "c")
     folded = facing_bet.child("f")
     assert folded.returns() == (1, -1)
     called = facing_bet.child("c")
     assert called.is_chance()
     assert called.contributions == (3, 3)
+
+
+def test_opening_bet_counts_toward_two_wager_cap():
+    state = LeducState(private=(0, 5))
+    after_check_bet = state.child("c").child("b")
+    assert after_check_bet.legal_actions() == ("f", "c", "r")
+    assert after_check_bet.child("r").legal_actions() == ("f", "c")
 
 
 def test_showdown_pair_beats_unpaired_and_is_zero_sum():

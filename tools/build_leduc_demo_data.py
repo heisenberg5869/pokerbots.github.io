@@ -62,7 +62,7 @@ def main():
     data = {
         "manifest": {
             "game": "Six-card Leduc Hold'em",
-            "rules": "ante=1; bets=2 then 4; two raises after the initial bet per round; P0 then P1 acts first",
+            "rules": "ante=1; bets=2 then 4; two wagers total per round (opening bet plus one re-raise); P0 acts first both rounds",
             "source_commit": subprocess.check_output(
                 ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
             ).strip(),

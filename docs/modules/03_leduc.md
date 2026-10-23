@@ -14,7 +14,7 @@ Suppose you hold a King and the public card is a Queen. Your pair is now strong.
 
 Leduc uses three ranks (J < Q < K), with two suits of each rank. Each player receives one private card. Players bet, one card is revealed to both, and then they bet again. A pair with the public rank beats any unpaired hand; otherwise the higher private rank wins. Suits only distinguish physical cards and do not break ties.
 
-The implementation uses one ante chip each, a two-chip bet size in round one, a four-chip bet size in round two, and a cap of two raises after the initial bet in each round. A check is `c`, a bet is `b`, a fold is `f`, and a raise is `r`; `c` means call when facing a wager. A round closes after two checks or a call. Player 0 acts first before the public card; player 1 acts first after it. These rules are fixed in `pokerbot/games/leduc.py` so experiments can reproduce them.
+The implementation uses one ante chip each, a two-chip bet size in round one, a four-chip bet size in round two, and a cap of two wagers per round (the opening bet and one re-raise), matching OpenSpiel's standard Leduc convention. A check is `c`, a bet is `b`, a fold is `f`, and a raise is `r`; `c` means call when facing a wager. A round closes after two checks or a call. Player 0 acts first in both rounds, as in OpenSpiel. These rules are fixed in `pokerbot/games/leduc.py` so experiments can reproduce them.
 
 ## Formal definition
 
@@ -74,7 +74,9 @@ Questions to keep in mind while exploring:
 
 The engine is checked against its rules: the chance probabilities sum to one, dealt cards are distinct, legal actions depend on whether a wager is outstanding, folds award the pot, and showdown ranks pairs above high cards. The exact exploitability routine from Module 01 can evaluate any returned average strategy.
 
-The browser lab reports the local state and information-set counts generated from the implementation. The plan recalls a first-player game value near \(-0.086\) and about 936 information sets for a common Leduc convention. Those are **not** published here as verified results: conventions and counting units differ across implementations, and this solver merges suit-symmetric decisions by rank. A reference cross-check remains open before claiming the literature value or count.
+The browser lab reports the local state and information-set counts generated from the implementation. Its 288 rank-symmetric information sets correspond to 936 information states when physical suits are kept distinct in OpenSpiel. The betting cap and first player also follow OpenSpiel: two wagers total per round, counting the opening bet and allowing one re-raise, with Player 0 opening both rounds. Raising matches the outstanding wager before adding the raise. See the [OpenSpiel Leduc implementation](https://github.com/google-deepmind/open_spiel/blob/master/open_spiel/games/leduc_poker/leduc_poker.cc) for its betting and suit-isomorphism rules.
+
+As a value sanity check, vanilla CFR's 1,000-, 2,000- and 3,000-iteration average policies have exact Player 0 values of (-0.088019), (-0.087394) and (-0.086927), with exploitabilities (0.016526), (0.011294) and (0.008289). The values approach the plan's approximate (-0.086) anchor as exploitability falls. This is an approximate validation, not an equilibrium certification. A direct run against OpenSpiel's solver and strategy has not yet been completed, so the high-accuracy cross-check remains open.
 
 ## Exercises
 

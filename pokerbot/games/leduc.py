@@ -2,7 +2,8 @@
 
 Each rank (J, Q, K) has two suits. Players ante one chip, play a round with
 small bets, reveal one public card, then play a round with big bets. A pair
-beats every unpaired hand. The cap is two raises per round (after the initial bet).
+beats every unpaired hand. The cap is two wagers per round: the opening bet
+and one re-raise, matching the standard OpenSpiel Leduc convention.
 
 Actions are ``f`` (fold), ``c`` (check/call), ``b`` (bet), and ``r`` (raise).
 Payoffs are net of each player's ante and subsequent contributions.
@@ -79,7 +80,7 @@ class LeducState(State):
             if self.private is None:
                 return LeducState(private=tuple(action))
             # _close_round already appended the slash marking the new round.
-            return LeducState(private=self.private, board=action, round=1, player=1,
+            return LeducState(private=self.private, board=action, round=1, player=0,
                               history=self.history, contributions=self.contributions)
         action = str(action)
         if action not in self.legal_actions():
@@ -98,9 +99,10 @@ class LeducState(State):
             bets[p] += amount
             contrib[p] += amount
             return LeducState(self.private, self.board, self.round, other, history,
-                              tuple(bets), tuple(contrib), 0, True)
+                              tuple(bets), tuple(contrib), 1, True)
         if action == "r":
-            amount = 2 if self.round == 0 else 4
+            raise_size = 2 if self.round == 0 else 4
+            amount = bets[other] - bets[p] + raise_size
             bets[p] += amount
             contrib[p] += amount
             return LeducState(self.private, self.board, self.round, other, history,
