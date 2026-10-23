@@ -2,7 +2,7 @@
 
 Each rank (J, Q, K) has two suits. Players ante one chip, play a round with
 small bets, reveal one public card, then play a round with big bets. A pair
-beats every unpaired hand. The betting cap is two bets/raises per round.
+beats every unpaired hand. The cap is two raises per round (after the initial bet).
 
 Actions are ``f`` (fold), ``c`` (check/call), ``b`` (bet), and ``r`` (raise).
 Payoffs are net of each player's ante and subsequent contributions.
@@ -17,7 +17,7 @@ from .base import Game, State
 RANKS = "JQK"
 CARDS = tuple(range(6))  # rank * 2 + suit
 ACTION_NAMES = {"f": "fold", "c": "check/call", "b": "bet", "r": "raise"}
-MAX_BETS = 2
+MAX_RAISES = 2
 
 
 def card_name(card: int) -> str:
@@ -26,10 +26,10 @@ def card_name(card: int) -> str:
 
 class LeducState(State):
     __slots__ = ("private", "board", "round", "player", "history", "round_bets",
-                 "contributions", "bet_count", "pending", "terminal")
+                 "contributions", "raises", "pending", "terminal")
 
     def __init__(self, private=None, board=None, round=0, player=0, history="",
-                 round_bets=(0, 0), contributions=(1, 1), bet_count=0,
+                 round_bets=(0, 0), contributions=(1, 1), raises=0,
                  pending=False, terminal=False):
         self.private = private
         self.board = board
@@ -38,7 +38,7 @@ class LeducState(State):
         self.history = history
         self.round_bets = round_bets
         self.contributions = contributions
-        self.bet_count = bet_count
+        self.raises = raises
         self.pending = pending
         self.terminal = terminal
 
@@ -64,8 +64,8 @@ class LeducState(State):
         if self.is_terminal() or self.is_chance():
             return ()
         if self.pending:
-            return ("f", "c", "r") if self.bet_count < MAX_BETS else ("f", "c")
-        return ("c", "b") if self.bet_count == 0 else ("c",)
+            return ("f", "c", "r") if self.raises < MAX_RAISES else ("f", "c")
+        return ("c", "b") if self.raises == 0 else ("c",)
 
     def info_set_key(self, player: int) -> str:
         if self.private is None:
@@ -78,8 +78,9 @@ class LeducState(State):
         if self.is_chance():
             if self.private is None:
                 return LeducState(private=tuple(action))
+            # _close_round already appended the slash marking the new round.
             return LeducState(private=self.private, board=action, round=1, player=1,
-                              history=self.history + "/", contributions=self.contributions)
+                              history=self.history, contributions=self.contributions)
         action = str(action)
         if action not in self.legal_actions():
             raise ValueError(f"illegal action {action!r}; legal actions are {self.legal_actions()}")
@@ -90,20 +91,20 @@ class LeducState(State):
         if action == "f":
             return LeducState(private=self.private, board=self.board, round=self.round,
                               player=p, history=history, round_bets=self.round_bets,
-                              contributions=self.contributions, bet_count=self.bet_count,
+                              contributions=self.contributions, raises=self.raises,
                               terminal=True)
         if action == "b":
             amount = 2 if self.round == 0 else 4
             bets[p] += amount
             contrib[p] += amount
             return LeducState(self.private, self.board, self.round, other, history,
-                              tuple(bets), tuple(contrib), 1, True)
+                              tuple(bets), tuple(contrib), 0, True)
         if action == "r":
             amount = 2 if self.round == 0 else 4
             bets[p] += amount
             contrib[p] += amount
             return LeducState(self.private, self.board, self.round, other, history,
-                              tuple(bets), tuple(contrib), self.bet_count + 1, True)
+                              tuple(bets), tuple(contrib), self.raises + 1, True)
         if self.pending:  # call: match the outstanding wager
             amount = bets[other] - bets[p]
             bets[p] += amount
@@ -113,14 +114,14 @@ class LeducState(State):
         if history.endswith("cc"):
             return self._close_round(history, tuple(bets), tuple(contrib))
         return LeducState(self.private, self.board, self.round, other, history,
-                          tuple(bets), tuple(contrib), self.bet_count, False)
+                          tuple(bets), tuple(contrib), self.raises, False)
 
     def _close_round(self, history, bets, contributions):
         if self.round == 0:
             return LeducState(self.private, None, 1, 1, history + "/", (0, 0),
                               contributions, 0, False)
         return LeducState(self.private, self.board, 1, self.player, history,
-                          bets, contributions, self.bet_count, False, terminal=True)
+                              bets, contributions, self.raises, False, terminal=True)
 
     def returns(self):
         if not self.terminal:

@@ -7,7 +7,7 @@ Status values: **planned → outline → in progress → draft → reviewed → 
 | 00 | Prerequisites | outline | — | — | — | — |
 | 01 | Kuhn Poker | in progress | ✅ engine, CFR, exploitability | ✅ | ✅ | — |
 | 02 | Regret Matching | draft | ✅ `RegretMatcher`, ✅ `matrix_games` (RM, RM+, Hedge) | ✅ | ✅ | ✅ RPS demo |
-| 03 | Leduc Hold'em | in progress | ✅ engine, configurable CFR variants | ✅ rules-level | ✅ notebook | — |
+| 03 | Leduc Hold'em | in progress | ✅ engine, configurable CFR variants | ✅ rules-level | ✅ notebook | ✅ tree, heatmap, beliefs, reach, race, play |
 | 04 | Expanded Leduc + MCCFR | planned | — | — | — | — |
 | 05 | Limit Hold'em | planned | — | — | — | — |
 | 06 | Abstraction & Endgame | planned | — | — | — | — |

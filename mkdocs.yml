@@ -33,6 +33,7 @@ nav:
       - 02 Regret Matching: modules/02_regret_matching.md
   - Small solvable games:
       - 03 Leduc Hold'em: modules/03_leduc.md
+      - 03 Leduc interactive lab: demos/leduc_lab.html
       - 04 Expanded Leduc + MCCFR: modules/04_mccfr.md
   - Real poker:
       - 05 Limit Hold'em: modules/05_limit_holdem.md

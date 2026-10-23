@@ -14,10 +14,14 @@ def test_private_deal_and_board_chance_probabilities():
                for deal, prob in deals)
     after_bet_check = root.child(deals[0][0]).child("c").child("c")
     assert after_bet_check.is_chance()
+    assert after_bet_check.history == "cc/"
     boards = after_bet_check.chance_outcomes()
     assert len(boards) == 4
     assert sum(prob for _, prob in boards) == pytest.approx(1)
     assert all(prob == pytest.approx(1 / 4) for _, prob in boards)
+    after_board = after_bet_check.child(boards[0][0])
+    assert after_board.history == "cc/"
+    assert after_board.info_set_key(1).endswith("1:cc/")
 
 
 def test_betting_actions_and_fold_payoff():
@@ -25,6 +29,10 @@ def test_betting_actions_and_fold_payoff():
     assert state.legal_actions() == ("c", "b")
     facing_bet = state.child("b")
     assert facing_bet.legal_actions() == ("f", "c", "r")
+    facing_reraise = facing_bet.child("r")
+    assert facing_reraise.legal_actions() == ("f", "c", "r")
+    cap_reached = facing_reraise.child("r")
+    assert cap_reached.legal_actions() == ("f", "c")
     folded = facing_bet.child("f")
     assert folded.returns() == (1, -1)
     called = facing_bet.child("c")
