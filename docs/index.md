@@ -9,6 +9,7 @@ Every module explains one idea from scratch (intuition, math, code, interactive 
 1. [00 Prerequisites](modules/00_prereqs.md): the game theory you need
 2. [01 Kuhn Poker](modules/01_kuhn.md): your first solved game (working code + tests)
 3. [02 Regret Matching](modules/02_regret_matching.md): why CFR works (with an interactive demo)
+4. [03 Leduc Hold'em](modules/03_leduc.md): chance events, public cards, beliefs and CFR variants
 
 See the [Roadmap](roadmap.md) for status of every module, [Notation](notation.md) for symbols, and the [Glossary](glossary.md) for terms.
 

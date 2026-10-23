@@ -2,42 +2,101 @@
 
 | Level | Prerequisites | Status |
 |---|---|---|
-| Intermediate | 01, 02 | planned |
+| Intermediate | 01, 02 | in progress |
 
 ## Motivation
-_What the previous module could not do, and why this one exists._
 
-## What you will learn
-Chance nodes and public cards; two betting rounds; raises and raise caps; beliefs over the opponent's hidden card; CFR+, linear CFR and alternating updates; equilibrium convergence on a game with ~10^4 information-state nodes.
+Kuhn Poker has one private deal and one betting round. It cannot show what happens when a public card arrives *after* players have acted. Leduc adds that event while keeping the deck and betting tree small enough for exact traversal.
 
-## What you will build
-Leduc engine; CFR and CFR+; exploitability curves; cross-check against OpenSpiel's published numbers.
+## Intuition first: a card changes both hands
 
-## Intuition first
-_TODO: a tiny worked example and a picture before any formulas._
+Suppose you hold a King and the public card is a Queen. Your pair is now strong. If the public card is a King instead, every remaining King is gone from the opponent's possible hand and your own King makes a pair. A public card changes hand strength and the set of cards the opponent could hold. That shrinking set is **card removal**.
+
+Leduc uses three ranks (J < Q < K), with two suits of each rank. Each player receives one private card. Players bet, one card is revealed to both, and then they bet again. A pair with the public rank beats any unpaired hand; otherwise the higher private rank wins. Suits only distinguish physical cards and do not break ties.
+
+The implementation uses one ante chip each, a two-chip bet size in round one, a four-chip bet size in round two, and at most two bets/raises in each round. A check is `c`, a bet is `b`, a fold is `f`, and a raise is `r`; `c` means call when facing a wager. A round closes after two checks or a call. Player 0 acts first before the public card; player 1 acts first after it. These rules are fixed in `pokerbot/games/leduc.py` so experiments can reproduce them.
 
 ## Formal definition
-_TODO: use the notation in [Notation](../notation.md)._
 
-## Algorithm
-_TODO: pseudocode, then a minimal implementation._
+The game is represented by a state machine with chance and decision states. A chance deal chooses two distinct private cards uniformly. After round one, a second chance node chooses one of the four remaining physical cards uniformly. At a decision state, the player's information set contains their own rank, the public rank (or `?` before the reveal), the round and the public betting history. It does not reveal the opponent's private card.
+
+The reach probability factors into each player's own action reach and chance reach:
+
+\[\pi(h) = \pi_0(h)\,\pi_1(h)\,\pi_c(h).\]
+
+At a player-\(i\) information set, counterfactual regret is weighted by the opponent's and chance's reach, \(\pi_{-i}(h)\pi_c(h)\). Average strategy instead accumulates the acting player's own reach. The distinction is easier to see now: a chance event may occur between two decisions.
+
+## Beliefs and ranges
+
+After observing public history \(a\) and board card \(b\), a player can assign a probability to each opponent card \(c\):
+
+\[P(c\mid a,b,\text{my card}) \propto P(a\mid c,b,\text{my card})P(c\mid b,\text{my card}).\]
+
+The prior is zero for the card you hold and the public card. The likelihood comes from the opponent's strategy: a raise makes hands that raise often more likely. In the solver this belief is induced by the same strategy and chance reach used by CFR; no hidden card is added to the acting player's information set.
+
+## Algorithm: CFR and useful variants
+
+Vanilla CFR traverses all chance outcomes and all actions, computes each action's counterfactual value, and adds the action's advantage over the node value to cumulative regret. Regret matching turns positive regrets into the next policy.
+
+The shared trainer supports four experimental switches:
+
+- **CFR+** (`plus=True`) clips cumulative regrets to zero after each update.
+- **Alternating CFR** (`alternating=True`) traverses once for each player, updating only that player's regrets on its pass.
+- **Linear averaging** (`linear_average=True`) weights iteration \(t\) by \(t\) when accumulating average strategy.
+- **Discounted CFR** (`discount=(\alpha,\beta,\gamma)`) discounts positive regrets, negative regrets, and average strategy separately.
+
+These switches can be combined, but they are not a promise that every setting is faster on every game. Compare exact exploitability, runtime, and the resulting strategy; use the **average strategy** for the equilibrium diagnostic.
+
+```python
+from pokerbot.games.leduc import LeducPoker
+from pokerbot.solvers.cfr import CFRTrainer
+from pokerbot.eval.exploitability import exploitability
+
+game = LeducPoker()
+trainer = CFRTrainer(game, plus=True, alternating=True, linear_average=True)
+trainer.train(100)
+print(exploitability(game, trainer.average_strategy()))
+```
 
 ## Interactive lab
-_TODO: notebook in `modules/03_leduc/` and/or a browser demo._
+
+The module lab is in [`modules/03_leduc/`](../../modules/03_leduc/README.md). Start by inspecting the two chance nodes and the information-set keys. Then solve at a small iteration count and inspect the changing regret and average-strategy tables.
+
+Questions to keep in mind while exploring:
+
+1. Which possible opponent cards disappear after the board is revealed?
+2. How does a bet change the posterior over the opponent's private rank?
+3. Why does counterfactual regret include the chance probability, while an information set's policy average uses the player's own reach?
 
 ## Verification
-_TODO: compare against a known answer (exact equilibrium, LP, or a published number)._
+
+The engine is checked against its rules: the chance probabilities sum to one, dealt cards are distinct, legal actions depend on whether a wager is outstanding, folds award the pot, and showdown ranks pairs above high cards. The exact exploitability routine from Module 01 can evaluate any returned average strategy.
+
+The plan recalls a first-player game value near \(-0.086\) and about 936 information sets for a common Leduc convention. Those are **not** published here as verified results: the exact conventions differ across implementations, and the local game intentionally uses a rank-symmetric information-set key. A reference cross-check and convergence study remain open before claiming the literature value or count.
 
 ## Exercises
-- **Recall:** _TODO_
-- **Implement:** _TODO_
-- **Extend:** _TODO_
+
+- **Recall:** Why does the opponent's private-card belief change after a public card, even before either player acts?
+- **Implement:** Add a test that enumerates all physical deals and confirms each has probability \(1/30\), and all board cards conditional on a deal have probability \(1/4\).
+- **Extend:** Add a third rank or change the bet sizes. Record first-player value and exploitability at the same iteration budget for vanilla CFR and CFR+.
+
+## Common mistakes
+
+- Treating the board as private information.
+- Leaving the known private and board cards in the opponent's possible range.
+- Averaging strategies without the player's own reach weight.
+- Comparing the current strategy's exploitability while describing convergence of the average strategy.
 
 ## Where this breaks
-Full-tree traversal scales with the game tree. A bigger deck makes each iteration too slow, so we sample (Module 04).
 
-## Checkpoint — you are done when…
-_TODO: 3 to 5 concrete things you can do or explain._
+Even this tiny game requires traversing its entire tree each iteration. With a larger deck, most visited states contribute little to a particular update. Module 04 samples paths instead of visiting the full tree.
+
+## Checkpoint
+
+You are ready to continue when you can explain why the public card creates a second chance node, derive a posterior that respects card removal, and compare solver variants using exact exploitability of their average strategies.
 
 ## Further reading
-_TODO_
+
+- Southey et al., *Bayes' Bluff* (Leduc as a benchmark game; bibliographic details to confirm before release).
+- Tammelin, *Solving Large Imperfect Information Games Using CFR+* (2014).
+- Lanctot et al., *OpenSpiel: A Framework for Reinforcement Learning in Games* (2019).

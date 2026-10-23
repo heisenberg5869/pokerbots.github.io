@@ -1,5 +1,55 @@
-# 03 · Leduc Hold'em
+# Module 03 lab: Leduc Hold'em
 
-Read the explanation: [`docs/modules/03_leduc.md`](../../docs/modules/03_leduc.md)
+Read the lesson first: [`docs/modules/03_leduc.md`](../../docs/modules/03_leduc.md).
 
-Hands-on material (notebooks, exercises) goes in this folder.
+## Run the game
+
+From the repository root:
+
+```python
+from pokerbot.games.leduc import LeducPoker, card_name
+
+state = LeducPoker().root()
+print(len(state.chance_outcomes()))  # 30 ordered private deals
+deal, probability = state.chance_outcomes()[0]
+print([card_name(card) for card in deal], probability)
+```
+
+The first chance node deals both private cards; after the first betting round, a second chance node reveals one of four remaining cards. Inspect `info_set_key(player)` to see which facts a player may use.
+
+## Compare CFR variants
+
+```python
+from pokerbot.games.leduc import LeducPoker
+from pokerbot.solvers.cfr import CFRTrainer
+from pokerbot.eval.exploitability import exploitability
+
+game = LeducPoker()
+variants = {
+    "vanilla": {},
+    "CFR+": {"plus": True},
+    "alternating + linear average": {
+        "plus": True, "alternating": True, "linear_average": True,
+    },
+}
+for label, options in variants.items():
+    trainer = CFRTrainer(game, **options)
+    trainer.train(10)  # raise this for a convergence experiment
+    average = trainer.average_strategy()
+    print(label, "infosets:", len(average),
+          "exploitability:", exploitability(game, average))
+```
+
+Full-tree iterations are expensive with the simple immutable state interface. Start with a few iterations, then measure before increasing the budget. Never compare variants at different iteration counts without reporting that choice.
+
+## Lab tasks
+
+1. Enumerate the chance outcomes and verify the probabilities.
+2. Follow a check-check path into the public-card chance node.
+3. Compare the same information set across two different hidden opponent cards. The acting player's key should be identical.
+4. Plot exploitability against iteration count for vanilla CFR, CFR+, and alternating CFR+ with linear averaging.
+5. Record wall time and exploitability together. An iteration count alone is not a useful speed comparison.
+
+## Current scope
+
+The engine, configurable CFR trainer, rules-level tests, and lesson are implemented. The rich tree, strategy heatmap, belief tracker, play table, and precomputed race data from the master plan are follow-up work. Literature game-value and raw information-set counts remain explicitly unverified.
