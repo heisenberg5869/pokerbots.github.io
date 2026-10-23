@@ -1,0 +1,2117 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Learn to solve poker, from Kuhn to custom variants">
+      
+      
+      
+        <link rel="canonical" href="https://heisenberg5869.github.io/pokerbots.github.io/modules/02_regret_matching/">
+      
+      
+        <link rel="prev" href="../01_kuhn/">
+      
+      
+        <link rel="next" href="../03_leduc/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>02 Regret Matching - pokerbots</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#02-regret-matching-no-regret-learning" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="pokerbots" class="md-header__button md-logo" aria-label="pokerbots" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pokerbots
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              02 Regret Matching
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/heisenberg5869/pokerbots.github.io" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="pokerbots" class="md-nav__button md-logo" aria-label="pokerbots" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    pokerbots
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/heisenberg5869/pokerbots.github.io" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Foundations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Foundations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../00_prereqs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    00 Prerequisites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01_kuhn/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    01 Kuhn Poker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 Regret Matching
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    02 Regret Matching
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#motivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Motivation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-will-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What you will learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-setting-learning-from-hindsight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The setting: learning from hindsight
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-rule-regret-matching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The rule: regret matching
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The rule: regret matching">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#worked-example-check-it-against-the-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worked example (check it against the code)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-it-works-the-regret-bound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why it works: the regret bound
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#from-no-regret-to-nash-equilibrium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From no-regret to Nash equilibrium
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="From no-regret to Nash equilibrium">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-the-average-not-the-current-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why the average, not the current strategy?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-fast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How fast?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variants-you-should-know" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variants you should know
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#from-matrix-games-to-cfr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From matrix games to CFR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interactive-lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactive lab
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercises
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-this-breaks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where this breaks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checkpoint-you-are-done-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint: you are done when…
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Small solvable games
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Small solvable games
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03_leduc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 Leduc Hold'em
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demos/leduc_lab.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    03 Leduc interactive lab
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04_mccfr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    04 Expanded Leduc + MCCFR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Real poker
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Real poker
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05_limit_holdem/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    05 Limit Hold'em
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06_abstraction_endgame/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    06 Abstraction & Endgame
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07_nolimit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    07 Heads-Up No-Limit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Neural era
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Neural era
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08_deep_cfr/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    08 Deep CFR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09_value_nets_search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    09 Value Nets & Search
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hard frontier
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Hard frontier
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10_plo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    10 Pot-Limit Omaha
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11_multiplayer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    11 Multiplayer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12_opponent_modelling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    12 Opponent Modelling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design your own
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Design your own
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13_variants/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    13 Custom Variants
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../14_case_studies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    14 Case Studies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#motivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Motivation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-you-will-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What you will learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-setting-learning-from-hindsight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The setting: learning from hindsight
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-rule-regret-matching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The rule: regret matching
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The rule: regret matching">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#worked-example-check-it-against-the-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worked example (check it against the code)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-it-works-the-regret-bound" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why it works: the regret bound
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#from-no-regret-to-nash-equilibrium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From no-regret to Nash equilibrium
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="From no-regret to Nash equilibrium">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-the-average-not-the-current-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why the average, not the current strategy?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-fast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How fast?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#variants-you-should-know" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variants you should know
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#from-matrix-games-to-cfr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From matrix games to CFR
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interactive-lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactive lab
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exercises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exercises
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-this-breaks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where this breaks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#checkpoint-you-are-done-when" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint: you are done when…
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Further reading
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="02-regret-matching-no-regret-learning">02 · Regret Matching &amp; No-Regret Learning<a class="headerlink" href="#02-regret-matching-no-regret-learning" title="Permanent link">&para;</a></h1>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Prerequisites</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Beginner</td>
+<td><a href="../00_prereqs/">00 Prerequisites</a>, <a href="../01_kuhn/">01 Kuhn Poker</a></td>
+<td>draft</td>
+</tr>
+</tbody>
+</table>
+<h2 id="motivation">Motivation<a class="headerlink" href="#motivation" title="Permanent link">&para;</a></h2>
+<p>In Module 01 you ran CFR and it produced the right equilibrium. But <em>why</em>? Nothing in the code solved for an
+equilibrium: it just played against itself and nudged probabilities toward actions it "regretted" not taking.</p>
+<p>This module explains why that works, in the simplest setting where it can be seen completely: a <strong>matrix game</strong>
+(rock-paper-scissors). The same idea, applied once at every information set, <em>is</em> CFR. By the end you will know:</p>
+<ul>
+<li>what <strong>regret</strong> means and why "no regret" is a meaningful goal,</li>
+<li>the <strong>regret matching</strong> rule and a short proof that its regret grows only like <span class="arithmatex">\(\sqrt{T}\)</span>,</li>
+<li>why two no-regret learners playing each other converge to Nash equilibrium (in the <strong>average</strong>, not the current strategy),</li>
+<li>exactly what the lines <code>regret_sum += cf_reach * (...)</code> in the CFR solver are computing.</li>
+</ul>
+<h2 id="what-you-will-learn">What you will learn<a class="headerlink" href="#what-you-will-learn" title="Permanent link">&para;</a></h2>
+<p>external regret · no-regret algorithms · regret matching · regret matching+ · Hedge (multiplicative weights) ·
+average vs current strategy · the <span class="arithmatex">\(1/\sqrt{T}\)</span> rate · from no-regret to equilibrium · from matrix games to CFR</p>
+<h2 id="the-setting-learning-from-hindsight">The setting: learning from hindsight<a class="headerlink" href="#the-setting-learning-from-hindsight" title="Permanent link">&para;</a></h2>
+<p>Forget equilibrium for a moment. You play the same game against an opponent over many rounds <span class="arithmatex">\(t = 1,\dots,T\)</span>.
+Each round:</p>
+<ol>
+<li>you choose a probability distribution <span class="arithmatex">\(\sigma^t\)</span> over your actions,</li>
+<li>the opponent's move is revealed, so you learn the utility <span class="arithmatex">\(u^t(a)\)</span> <em>every</em> action <span class="arithmatex">\(a\)</span> would have earned,</li>
+<li>you receive <span class="arithmatex">\(\langle \sigma^t, u^t\rangle = \sum_a \sigma^t(a)\,u^t(a)\)</span>.</li>
+</ol>
+<p>After <span class="arithmatex">\(T\)</span> rounds, ask: <strong>what if I had played one fixed action the whole time?</strong> The best such action's total
+minus what you actually got is your <strong>external regret</strong>:</p>
+<div class="arithmatex">\[
+R^T \;=\; \max_{a}\sum_{t=1}^{T} u^t(a)\;-\;\sum_{t=1}^{T}\langle \sigma^t,u^t\rangle .
+\]</div>
+<p>An algorithm is <strong>no-regret</strong> if <span class="arithmatex">\(R^T/T \to 0\)</span> against <em>every</em> opponent, even one that adapts to try to hurt you.
+That is a strong promise, and it needs no model of the opponent at all.</p>
+<div class="admonition note">
+<p class="admonition-title">What regret is <em>not</em></p>
+<p>Regret compares you with the best <strong>fixed</strong> action in hindsight. It does not compare you with the best
+<em>sequence</em> of actions. Against an opponent who cycles Rock, Paper, Scissors, always-Rock has zero advantage,
+but a player who reacts one step ahead would win every round. No-regret does not promise that.</p>
+</div>
+<h2 id="the-rule-regret-matching">The rule: regret matching<a class="headerlink" href="#the-rule-regret-matching" title="Permanent link">&para;</a></h2>
+<p>Define the <strong>instantaneous regret</strong> of action <span class="arithmatex">\(a\)</span> at round <span class="arithmatex">\(t\)</span>: how much better <span class="arithmatex">\(a\)</span> would have done than what you played.</p>
+<div class="arithmatex">\[
+r^t(a) \;=\; u^t(a) \;-\; \langle \sigma^t,u^t\rangle, \qquad
+R^t(a)=\sum_{s\le t} r^s(a).
+\]</div>
+<p><strong>Regret matching</strong> plays each action in proportion to its <em>positive</em> cumulative regret:</p>
+<div class="arithmatex">\[
+\sigma^{t+1}(a)\;=\;\frac{R^{t}(a)^{+}}{\sum_{b} R^{t}(b)^{+}}\quad\text{(uniform if all regrets are}\le 0\text{)},
+\qquad x^+=\max(x,0).
+\]</div>
+<p>Actions you regret not having played get more weight; actions that did worse than your mix get none.</p>
+<h3 id="worked-example-check-it-against-the-code">Worked example (check it against the code)<a class="headerlink" href="#worked-example-check-it-against-the-code" title="Permanent link">&para;</a></h3>
+<p>You use regret matching on rock-paper-scissors; the opponent plays Rock, then Scissors, then Rock.
+Utilities are listed in the order (Rock, Paper, Scissors).</p>
+<table>
+<thead>
+<tr>
+<th>Round</th>
+<th>Your <span class="arithmatex">\(\sigma^t\)</span></th>
+<th>Opponent</th>
+<th><span class="arithmatex">\(u^t\)</span></th>
+<th>Value</th>
+<th><span class="arithmatex">\(r^t\)</span></th>
+<th>Cumulative <span class="arithmatex">\(R^t\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>(⅓, ⅓, ⅓)</td>
+<td>Rock</td>
+<td>(0, 1, −1)</td>
+<td>0</td>
+<td>(0, 1, −1)</td>
+<td>(0, 1, −1)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>(0, 1, 0)</td>
+<td>Scissors</td>
+<td>(1, −1, 0)</td>
+<td>−1</td>
+<td>(2, 0, 1)</td>
+<td>(2, 1, 0)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>(⅔, ⅓, 0)</td>
+<td>Rock</td>
+<td>(0, 1, −1)</td>
+<td>⅓</td>
+<td>(−⅓, ⅔, −4⁄3)</td>
+<td>(5⁄3, 5⁄3, −4⁄3)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>(½, ½, 0)</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>After round 1 you regret not playing Paper, so you play Paper. It loses to Scissors, which makes you regret Rock
+the most, and so on. Scissors (negative regret) is eliminated until it earns positive regret. This table is
+reproduced exactly by <code>Learner</code> in <code>pokerbot/solvers/matrix_games.py</code>.</p>
+<h2 id="why-it-works-the-regret-bound">Why it works: the regret bound<a class="headerlink" href="#why-it-works-the-regret-bound" title="Permanent link">&para;</a></h2>
+<div class="admonition success">
+<p class="admonition-title">Theorem (regret matching)</p>
+<p>If every utility lies in a range of width <span class="arithmatex">\(\Delta\)</span> and there are <span class="arithmatex">\(n\)</span> actions, then against any opponent
+[
+R^T \;\le\; \Delta\sqrt{nT}.
+]
+So average regret <span class="arithmatex">\(R^T/T \le \Delta\sqrt{n}/\sqrt{T}\to 0\)</span>.</p>
+</div>
+<details class="note">
+<summary>Proof sketch (about ten lines)</summary>
+<p>Let <span class="arithmatex">\(R^t_+\)</span> be the vector of positive parts of <span class="arithmatex">\(R^t\)</span>. Track its squared length.</p>
+<ol>
+<li>Clipping only shrinks things: <span class="arithmatex">\(\|R^{t}_+\|^2 \le \|R^{t-1}_+ + r^t\|^2 = \|R^{t-1}_+\|^2 + 2\langle R^{t-1}_+, r^t\rangle + \|r^t\|^2.\)</span></li>
+<li><strong>The cross term is exactly zero.</strong> Regret matching plays <span class="arithmatex">\(\sigma^t = R^{t-1}_+/Z\)</span> with <span class="arithmatex">\(Z=\sum_a R^{t-1}_+(a)\)</span>, so
+   <span class="arithmatex">\(\langle R^{t-1}_+, r^t\rangle = Z\big(\langle\sigma^t,u^t\rangle - \langle\sigma^t,u^t\rangle\big)=0.\)</span>
+   The rule is built so that, on average, you gain nothing from the direction regret is pointing.</li>
+<li>Each <span class="arithmatex">\(|r^t(a)|\le\Delta\)</span>, so <span class="arithmatex">\(\|r^t\|^2\le n\Delta^2\)</span>. Telescoping: <span class="arithmatex">\(\|R^T_+\|^2 \le nT\Delta^2\)</span>.</li>
+<li>And <span class="arithmatex">\(R^T=\max_a R^T(a) \le \|R^T_+\|\le\Delta\sqrt{nT}.\)</span> ∎</li>
+</ol>
+</details>
+<p>The bound is <strong>sublinear</strong>: regret grows, but slower than <span class="arithmatex">\(T\)</span>. You can see it in the notebook: for RPS the
+measured regret sits well below <span class="arithmatex">\(\Delta\sqrt{3T}\)</span>.</p>
+<h2 id="from-no-regret-to-nash-equilibrium">From no-regret to Nash equilibrium<a class="headerlink" href="#from-no-regret-to-nash-equilibrium" title="Permanent link">&para;</a></h2>
+<p>Now let two no-regret learners play a <strong>zero-sum</strong> game against each other, each treating the other as "the opponent".</p>
+<div class="admonition success">
+<p class="admonition-title">Theorem (no-regret ⇒ equilibrium)</p>
+<p>Let <span class="arithmatex">\(\bar x, \bar y\)</span> be the players' <strong>average</strong> strategies over <span class="arithmatex">\(T\)</span> rounds, and suppose their average regrets
+are <span class="arithmatex">\(\varepsilon_1,\varepsilon_2\)</span>. Then the exploitability of <span class="arithmatex">\((\bar x,\bar y)\)</span> is at most <span class="arithmatex">\((\varepsilon_1+\varepsilon_2)/2\)</span>.</p>
+</div>
+<details class="note">
+<summary>Why (four lines)</summary>
+<ul>
+<li>Utility is linear in the opponent's mix, so the best fixed action's average payoff against the sequence <span class="arithmatex">\(y^1,\dots,y^T\)</span>
+  equals its payoff against the average <span class="arithmatex">\(\bar y\)</span>. Hence <span class="arithmatex">\(\max_i u(i,\bar y)\)</span> is the row player's best-response value to <span class="arithmatex">\(\bar y\)</span>, and
+  <span class="arithmatex">\(R^T_{\text{row}}/T\le\varepsilon_1\)</span> says: <em>best response to <span class="arithmatex">\(\bar y\)</span></em> <span class="arithmatex">\(\le\)</span> <em>average realised payoff</em> <span class="arithmatex">\(+\,\varepsilon_1\)</span>.</li>
+<li>The same holds for the column player.</li>
+<li>In a zero-sum game the two players' realised payoffs cancel every round.</li>
+<li>Adding the two inequalities: (BR gain against <span class="arithmatex">\(\bar y\)</span>) + (BR gain against <span class="arithmatex">\(\bar x\)</span>) <span class="arithmatex">\(\le \varepsilon_1+\varepsilon_2\)</span>. That sum is NashConv; exploitability is half of it. ∎</li>
+</ul>
+</details>
+<p>This is the whole engine. <strong>You never solve for equilibrium; you just keep regret small, and equilibrium
+falls out of the average.</strong> The test <code>test_low_regret_implies_low_exploitability</code> checks this inequality numerically.</p>
+<h3 id="why-the-average-not-the-current-strategy">Why the <em>average</em>, not the current strategy?<a class="headerlink" href="#why-the-average-not-the-current-strategy" title="Permanent link">&para;</a></h3>
+<p>Try the interactive demo below in <strong>self-play</strong> mode. The thin lines (current strategy) keep swinging between
+nearly pure strategies: when you play too much Rock, your opponent drifts toward Paper, which pushes you toward
+Scissors, and so on. The thick lines (average strategy) settle at ⅓, ⅓, ⅓.</p>
+<p>The guarantee is only about the average. This is why the CFR solver stores <code>strategy_sum</code> and why <code>average_strategy()</code>, not the
+current strategy, is what we evaluate.</p>
+<div class="admonition warning">
+<p class="admonition-title">Pitfall: starting at the equilibrium</p>
+<p>In a symmetric game like RPS, if both players start at uniform, all regrets are exactly zero and
+<strong>nothing ever changes</strong>: you sit on the equilibrium without learning anything. <code>self_play</code> therefore
+starts the row player slightly off-equilibrium (<code>skewed</code>). Test: <code>test_symmetric_game_stays_at_equilibrium_if_started_there</code>.</p>
+</div>
+<h2 id="how-fast">How fast?<a class="headerlink" href="#how-fast" title="Permanent link">&para;</a></h2>
+<p>Regret is <span class="arithmatex">\(O(\sqrt{T})\)</span>, so <em>average</em> regret and therefore exploitability fall like <span class="arithmatex">\(1/\sqrt{T}\)</span>. Measured on rock-paper-scissors:</p>
+<table>
+<thead>
+<tr>
+<th><span class="arithmatex">\(T\)</span></th>
+<th>exploitability</th>
+<th>exploitability <span class="arithmatex">\(\times\sqrt{T}\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100</td>
+<td>0.0993</td>
+<td>0.99</td>
+</tr>
+<tr>
+<td>1,000</td>
+<td>0.0287</td>
+<td>0.91</td>
+</tr>
+<tr>
+<td>10,000</td>
+<td>0.0094</td>
+<td>0.94</td>
+</tr>
+<tr>
+<td>100,000</td>
+<td>0.0032</td>
+<td>1.02</td>
+</tr>
+</tbody>
+</table>
+<p>The last column is roughly constant, as the theory predicts. Practical meaning: <strong>10× more accuracy costs 100× more iterations.</strong>
+This slow rate is what later modules fight (CFR+, sampling, neural approximation).</p>
+<h2 id="variants-you-should-know">Variants you should know<a class="headerlink" href="#variants-you-should-know" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Update</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regret matching (<code>"rm"</code>)</td>
+<td>play ∝ <span class="arithmatex">\(R^+\)</span></td>
+<td>the baseline; used in vanilla CFR</td>
+</tr>
+<tr>
+<td>Regret matching+ (<code>"rm+"</code>)</td>
+<td>after every step, <span class="arithmatex">\(R \leftarrow \max(R + r,\,0)\)</span></td>
+<td>forgets old negative regret so a good action recovers faster. Basis of <strong>CFR+</strong>, which solved heads-up limit Hold'em</td>
+</tr>
+<tr>
+<td>Hedge (<code>"hedge"</code>)</td>
+<td>play ∝ <span class="arithmatex">\(\exp(\eta\sum_t u^t)\)</span></td>
+<td>smoother, regret <span class="arithmatex">\(O(\Delta\sqrt{T\ln n})\)</span>: better when <span class="arithmatex">\(n\)</span> is large; needs a learning rate <span class="arithmatex">\(\eta\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>On RPS at <span class="arithmatex">\(T=20{,}000\)</span> in this repo: RM ≈ 7×10⁻³, RM+ ≈ 2×10⁻³, Hedge ≈ 3×10⁻⁴ exploitability.
+Do not read too much into one game, but the ordering is why RM+ is worth knowing.</p>
+<h2 id="from-matrix-games-to-cfr">From matrix games to CFR<a class="headerlink" href="#from-matrix-games-to-cfr" title="Permanent link">&para;</a></h2>
+<p>A poker game is not a matrix game: actions come in sequences, with hidden cards. The key idea of CFR
+(Zinkevich et al., 2007) is a <strong>decomposition</strong>:</p>
+<blockquote>
+<p>The regret of the whole strategy is bounded by the sum, over information sets <span class="arithmatex">\(I\)</span>, of the regret you would have
+if you could choose your action at <span class="arithmatex">\(I\)</span> alone, measured in <strong>counterfactual value</strong>.</p>
+</blockquote>
+<p>So we run an independent regret matcher at <em>every information set</em>, each fed with a slightly different "utility":</p>
+<div class="arithmatex">\[
+r^t(I,a) \;=\; \pi^{\sigma^t}_{-i}(I)\,\Big(v^{\sigma^t}(I,a) - v^{\sigma^t}(I)\Big),
+\]</div>
+<p>where <span class="arithmatex">\(v\)</span> is the expected payoff given you reach <span class="arithmatex">\(I\)</span> and then play <span class="arithmatex">\(a\)</span> (or follow <span class="arithmatex">\(\sigma\)</span>), and
+<span class="arithmatex">\(\pi_{-i}(I)\)</span> is the probability that <strong>everyone except you</strong> (opponent and chance) lets play reach <span class="arithmatex">\(I\)</span>.
+"Counterfactual" means: weight the situation as if you had <em>tried</em> to get here, so it counts by how often others
+cooperate in getting here, not by how often you did.</p>
+<p>That is precisely this line of <code>pokerbot/solvers/cfr.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="n">node</span><span class="o">.</span><span class="n">regret_sum</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">cf_reach</span> <span class="o">*</span> <span class="p">(</span><span class="n">action_values</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">player</span><span class="p">]</span> <span class="o">-</span> <span class="n">node_value</span><span class="p">[</span><span class="n">player</span><span class="p">])</span>
+</code></pre></div>
+<p>and the same file's <code>strategy_sum[i] += reach[player] * strategy[i]</code> is the averaging, weighted by <em>your own</em> reach.
+Zinkevich et al. show total regret <span class="arithmatex">\(R^T \le \Delta\,|\mathcal I|\sqrt{|A|}\,\sqrt{T}\)</span> (with <span class="arithmatex">\(|\mathcal I|\)</span> information sets), so
+average regret falls like <span class="arithmatex">\(1/\sqrt{T}\)</span>, and by the theorem above the average strategy's exploitability does too.
+You measured that in Module 01's convergence curve.</p>
+<h2 id="interactive-lab">Interactive lab<a class="headerlink" href="#interactive-lab" title="Permanent link">&para;</a></h2>
+<p><strong>Browser demo</strong> (no install). Pick <strong>vs fixed opponent</strong> to watch the strategy lock onto the best response, then
+switch to <strong>self-play</strong> and watch the thick (average) lines converge while the thin (current) lines keep swinging.</p>
+<iframe src="../../demos/regret_matching_rps.html" width="100%" height="470" style="border:1px solid #8884;border-radius:6px"></iframe>
+
+<p><strong>Notebook:</strong> <a href="https://github.com/heisenberg5869/pokerbots.github.io/blob/main/modules/02_regret_matching/notebook.ipynb"><code>modules/02_regret_matching/notebook.ipynb</code></a> lets you</p>
+<ol>
+<li>see the worked example reproduced by <code>Learner</code>,</li>
+<li>plot current vs average strategy in self-play,</li>
+<li>plot regret against the <span class="arithmatex">\(\Delta\sqrt{nT}\)</span> bound,</li>
+<li>fit the <span class="arithmatex">\(1/\sqrt{T}\)</span> rate on a log-log plot,</li>
+<li>compare RM, RM+ and Hedge,</li>
+<li>find the non-uniform equilibrium of a biased RPS.</li>
+</ol>
+<p>Questions to answer with the demo:</p>
+<ul>
+<li>Why does the average strategy converge in self-play while the <em>current</em> strategy keeps cycling?</li>
+<li>What happens to the learner when the opponent changes strategy mid-run? (Hint: old regret takes time to unwind. RM+ fixes this.)</li>
+<li>Make the opponent's mix very close to uniform. How long does the learner take to commit to a best response?</li>
+</ul>
+<h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
+<p><code>pytest tests/test_regret_matching.py</code> checks that:</p>
+<ul>
+<li>hand-derived equilibria of RPS and a biased RPS have exploitability 0,</li>
+<li>all three rules learn a best response to a fixed opponent,</li>
+<li>self-play average strategies converge to ⅓, ⅓, ⅓ (and to <span class="arithmatex">\((¼, ½, ¼)\)</span> in the biased game),</li>
+<li>the <em>current</em> strategy keeps swinging by more than 0.3 while the average converges,</li>
+<li>the symmetric-start pitfall is real,</li>
+<li>external regret stays under <span class="arithmatex">\(\Delta\sqrt{nT}\)</span>,</li>
+<li>exploitability <span class="arithmatex">\(\times \sqrt{T}\)</span> stays roughly constant over three orders of magnitude of <span class="arithmatex">\(T\)</span>,</li>
+<li>average regret upper-bounds the exploitability of the average profile.</li>
+</ul>
+<h2 id="exercises">Exercises<a class="headerlink" href="#exercises" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Recall:</strong> Why is regret measured against the best <em>fixed</em> action rather than the best sequence of actions? What would be impossible otherwise?</li>
+<li><strong>Recall:</strong> In the proof, which property of regret matching makes the cross term <span class="arithmatex">\(\langle R^+, r\rangle\)</span> vanish?</li>
+<li><strong>Implement:</strong> Without looking at <code>matrix_games.py</code>, write regret matching for RPS and reproduce the table in the worked example.</li>
+<li><strong>Implement:</strong> Add <em>linear averaging</em> (weight round <span class="arithmatex">\(t\)</span> by <span class="arithmatex">\(t\)</span>) to <code>Learner.average_strategy</code>. Does exploitability improve for RM+ on RPS? (This is the "+" in CFR+ too.)</li>
+<li><strong>Extend:</strong> Solve the biased game by hand (set <span class="arithmatex">\(A x = 0\)</span>) and confirm <span class="arithmatex">\((¼,½,¼)\)</span>. Now make Rock-beats-Scissors worth 3 instead. Predict the new equilibrium, then check it.</li>
+<li><strong>Extend:</strong> Implement Hedge with a <em>fixed</em> learning rate. Show that for large <span class="arithmatex">\(\eta\)</span> the current strategy cycles wildly, and for small <span class="arithmatex">\(\eta\)</span> learning is slow. What does this say about choosing <span class="arithmatex">\(\eta\)</span>?</li>
+<li><strong>Extend:</strong> Let the row player use regret matching and the column player play a fixed strategy that <em>switches</em> halfway through the run. Measure how long the row player takes to adapt, for RM and for RM+.</li>
+</ul>
+<h2 id="where-this-breaks">Where this breaks<a class="headerlink" href="#where-this-breaks" title="Permanent link">&para;</a></h2>
+<p>Matrix games list every strategy up front. Poker has far too many strategies for that, which is why CFR works
+on information sets instead. But vanilla CFR walks the <strong>entire</strong> game tree every iteration, and its <span class="arithmatex">\(1/\sqrt{T}\)</span> rate is slow.
+<a href="../03_leduc/">Leduc Hold'em</a> is the first game where chance nodes in the middle of the game, public cards and raises
+make both costs visible, and where CFR+ and better averaging start to pay off.</p>
+<p>Two caveats worth carrying forward:</p>
+<ul>
+<li>The guarantees above are for <strong>two-player zero-sum</strong> games. With three or more players, average strategies of no-regret learners need not be an equilibrium (<a href="../11_multiplayer/">Module 11</a>).</li>
+<li>Convergence is of the <strong>average</strong> only. Anything that <em>plays</em> the current strategy (or needs a single policy for a neural net to imitate) must be handled with care (<a href="../08_deep_cfr/">Module 08</a>).</li>
+</ul>
+<h2 id="checkpoint-you-are-done-when">Checkpoint: you are done when…<a class="headerlink" href="#checkpoint-you-are-done-when" title="Permanent link">&para;</a></h2>
+<ul>
+<li>you can define external regret and explain what "no-regret" does and does not promise,</li>
+<li>you can run regret matching by hand for three rounds,</li>
+<li>you can state why the average strategy, not the current one, converges to equilibrium in self-play,</li>
+<li>you can explain what <span class="arithmatex">\(\pi_{-i}\)</span> is doing in the counterfactual regret formula,</li>
+<li>you can predict how many more iterations you need for 10× lower exploitability.</li>
+</ul>
+<h2 id="further-reading">Further reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
+<ul>
+<li>S. Hart &amp; A. Mas-Colell, <em>A Simple Adaptive Procedure Leading to Correlated Equilibrium</em> (2000): where regret matching comes from.</li>
+<li>Y. Freund &amp; R. Schapire, <em>Adaptive Game Playing Using Multiplicative Weights</em> (1999): Hedge and the zero-sum theorem.</li>
+<li>N. Cesa-Bianchi &amp; G. Lugosi, <em>Prediction, Learning, and Games</em> (2006): the standard reference on regret.</li>
+<li>M. Zinkevich et al., <em>Regret Minimization in Games with Incomplete Information</em> (2007): the CFR paper; sections 2–3 are exactly this module plus the decomposition.</li>
+<li>O. Tammelin, <em>Solving Large Imperfect Information Games Using CFR+</em> (2014): regret matching+.</li>
+<li>T. Neller &amp; M. Lanctot, <em>An Introduction to Counterfactual Regret Minimization</em> (2013): a gentle companion to this page.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.top", "content.code.copy", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
