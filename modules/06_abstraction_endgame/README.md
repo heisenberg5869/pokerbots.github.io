@@ -1,5 +1,9 @@
-# 06 · Abstraction & Endgame Solving
+# 06 · Abstraction and Endgame Solving
 
-Read the explanation: [`docs/modules/06_abstraction_endgame.md`](../../docs/modules/06_abstraction_endgame.md)
+Status: in progress. Core histogram distance, small-data k-medoids, and action
+translation helpers are implemented and tested. A safe subgame solver and
+empirical abstraction evaluation remain planned.
 
-Hands-on material (notebooks, exercises) goes in this folder.
+- Lesson: `docs/modules/06_abstraction_endgame.md`
+- Interactive lab: `docs/demos/abstraction-module-06.html`
+- Notebook: `notebook.ipynb`

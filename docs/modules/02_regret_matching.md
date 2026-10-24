@@ -193,6 +193,8 @@ You measured that in Module 01's convergence curve.
 
 **Browser demo** (no install). Pick **vs fixed opponent** to watch the strategy lock onto the best response, then
 switch to **self-play** and watch the thick (average) lines converge while the thin (current) lines keep swinging.
+The lab now includes positive regret bars, a current-versus-average simplex trajectory, an RM/RM+ opponent-switch
+experiment, a speed control, and a small diagram that computes one counterfactual regret update.
 
 <iframe src="../../demos/regret_matching_rps.html" width="100%" height="470" style="border:1px solid #8884;border-radius:6px"></iframe>
 

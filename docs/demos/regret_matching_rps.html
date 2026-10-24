@@ -19,11 +19,17 @@
   <label>Mode
     <select id="mode"><option value="fixed">vs fixed opponent</option><option value="self">self-play</option></select></label>
   <button id="go">Run</button><button id="reset">Reset</button>
+  <label>Speed <b id="speed-out">20</b> updates/frame<input id="speed" type="range" min="1" max="100" value="20"></label>
 </div>
 <canvas id="c" width="1280" height="480"></canvas>
 <div class="mut" id="info" style="margin-top:6px"></div>
+<div class="row" style="margin-top:8px"><strong>Positive regret:</strong><span id="regret-bars"></span></div>
+<section><h2>Strategy on the simplex</h2><p class="mut">Each point is a probability mix. The thin path tracks current play; the thick path tracks the average.</p><svg id="simplex" viewBox="0 0 400 280" role="img" aria-label="Rock paper scissors strategy simplex"><polygon points="40,240 360,240 200,30" fill="none" stroke="currentColor" stroke-width="2"/><text x="22" y="265">Rock</text><text x="336" y="265">Paper</text><text x="181" y="20">Scissors</text><path id="simplex-current-path" fill="none" stroke="#888" stroke-width="2" stroke-dasharray="4 4"/><path id="simplex-average-path" fill="none" stroke="#111" stroke-width="3"/><circle id="simplex-current" r="7" fill="#e69f00"/><circle id="simplex-average" r="7" fill="#0072b2"/><text x="40" y="278" id="simplex-label">Orange = current · Blue = average</text></svg></section>
+<section><h2>Opponent switch: RM vs RM+</h2><p class="mut">The scripted opponent changes from Rock-heavy to Scissors-heavy. Compare how plain regret and regret matching+ adjust.</p><div class="row"><label>Switch at iteration <b id="switch-out">500</b><input id="switch-at" type="range" min="100" max="1900" step="100" value="500"></label><button id="run-switch">Run 2,000 rounds</button></div><canvas id="switch-chart" width="1000" height="300" style="width:100%;height:220px"></canvas><div class="mut" id="switch-info" aria-live="polite">Run the experiment to compare adaptation.</div></section>
+<section><h2>How CFR wires regret matchers to a game tree</h2><p>A local regret matcher turns action values into a mix; each information set has its own matcher. Counterfactual reach weights regret, while the player's own reach weights averaging.</p><div class="row"><label>Example information set <select id="decomp-key"><option value="Qpb">Q facing a bet after checking</option><option value="J">J opening</option><option value="Kp">K after opponent checks</option></select></label><label>Opponent × chance reach <input id="decomp-reach" type="number" min="0" max="1" step=".05" value=".25"></label><label>Pass value <input id="decomp-pass" type="number" value="-1" step=".25"></label><label>Bet value <input id="decomp-bet" type="number" value=".5" step=".25"></label><button id="decomp-update">Update values</button></div><svg viewBox="0 0 900 180" role="img" aria-label="A miniature poker decision feeding a regret matcher"><g fill="none" stroke="currentColor" stroke-width="2"><path d="M100 90H300M360 90L510 45M360 90L510 135M580 45H700M580 135H700"/><rect x="25" y="60" width="150" height="60" rx="8"/><rect x="300" y="60" width="120" height="60" rx="8"/><rect x="510" y="20" width="130" height="50" rx="8"/><rect x="510" y="110" width="130" height="50" rx="8"/><rect x="700" y="50" width="170" height="80" rx="8"/></g><text x="45" y="85">Poker tree</text><text x="38" y="105" id="decomp-label">I = Qpb</text><text x="320" y="84">Regret</text><text x="317" y="105">matcher</text><text x="530" y="50">Pass value</text><text x="530" y="140">Bet value</text><text x="724" y="82">Next mix</text><text x="718" y="104" id="decomp-result">50% / 50%</text></svg><p id="decomp-math" class="mut" aria-live="polite"></p></section>
 <script>
 const U=[[0,-1,1],[1,0,-1],[-1,1,0]]; // payoff to row player: R,P,S
+const $=id=>document.getElementById(id);
 let reg,sum,reg2,sum2,t,run=false,hist;
 function init(){reg=[0,0,0];sum=[0,0,0];reg2=[0,0,0];sum2=[0,0,0];t=0;hist=[];}
 function strat(r){const p=r.map(x=>Math.max(x,0)),s=p[0]+p[1]+p[2];return s>0?p.map(x=>x/s):[1/3,1/3,1/3];}
@@ -46,12 +52,15 @@ function step(n){
   }
 }
 const cv=document.getElementById("c"),ctx=cv.getContext("2d");
+const speed=document.getElementById("speed"),speedOut=document.getElementById("speed-out"),regretBars=document.getElementById("regret-bars");
+const switchAtSlider=document.getElementById("switch-at"),switchOut=document.getElementById("switch-out"),runSwitch=document.getElementById("run-switch"),switchInfo=document.getElementById("switch-info"),switchChart=document.getElementById("switch-chart");
+const decompReach=document.getElementById("decomp-reach"),decompPass=document.getElementById("decomp-pass"),decompBet=document.getElementById("decomp-bet"),decompKey=document.getElementById("decomp-key"),decompLabel=document.getElementById("decomp-label"),decompResult=document.getElementById("decomp-result"),decompUpdate=document.getElementById("decomp-update");
 const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 function draw(){
   const W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
   ctx.strokeStyle=css("--line");ctx.fillStyle=css("--mut");ctx.font="22px system-ui";
   for(let g=0;g<=4;g++){const y=H-30-(H-50)*g/4;ctx.beginPath();ctx.moveTo(50,y);ctx.lineTo(W-10,y);ctx.stroke();ctx.fillText((g/4).toFixed(2),4,y+7);}
-  if(hist.length<2)return;
+  if(hist.length<2){updateExtras();return;}
   const cols=[css("--r"),css("--p"),css("--s")],maxT=hist[hist.length-1].t;
   for(let a=0;a<3;a++){   // thin, faint: CURRENT strategy
     ctx.strokeStyle=cols[a];ctx.globalAlpha=0.35;ctx.lineWidth=1.5;ctx.beginPath();
@@ -65,12 +74,18 @@ function draw(){
   ctx.fillStyle=css("--mut");ctx.fillText("iterations → "+t,W-230,H-6);
   const f=hist[hist.length-1].avg;
   info.textContent="Average strategy: R "+f[0].toFixed(3)+"  P "+f[1].toFixed(3)+"  S "+f[2].toFixed(3)+
-   (mode.value==="self"?"   (equilibrium = 0.333 each)":"   (best response to opponent: "+["Rock","Paper","Scissors"][[0,1,2].map(i=>{const o=opp();return o[0]*U[i][0]+o[1]*U[i][1]+o[2]*U[i][2];}).reduce((b,x,i,a)=>x>a[b]?i:b,0)]+")");
+   (mode.value==="self"?"   (equilibrium = 0.333 each)":"   (best response to opponent: "+["Rock","Paper","Scissors"][[0,1,2].map(i=>{const o=opp();return o[0]*U[i][0]+o[1]*U[i][1]+o[2]*U[i][2];}).reduce((b,x,i,a)=>x>a[b]?i:b,0)]+")");updateExtras();
 }
-function loop(){if(run){step(20);draw();}requestAnimationFrame(loop);}
+function simplexPoint(s){return [40+320*(s[1]+.5*s[2]),240-210*s[2]]}
+function updateExtras(){const pp=reg.map(x=>Math.max(0,x)),tot=pp.reduce((a,b)=>a+b,0);regretBars.innerHTML=['Rock','Paper','Scissors'].map((n,i)=>`${n} ${reg[i].toFixed(3)} (positive ${pp[i].toFixed(3)})`).join(' · ');if(!hist.length)return;const path=(field)=>hist.map((h,i)=>{const [x,y]=simplexPoint(h[field]);return `${i?'L':'M'}${x.toFixed(1)} ${y.toFixed(1)}`}).join(' ');$('simplex-current-path').setAttribute('d',path('cur'));$('simplex-average-path').setAttribute('d',path('avg'));const cur=hist[hist.length-1],pc=simplexPoint(cur.cur),pa=simplexPoint(cur.avg);$('simplex-current').setAttribute('cx',pc[0]);$('simplex-current').setAttribute('cy',pc[1]);$('simplex-average').setAttribute('cx',pa[0]);$('simplex-average').setAttribute('cy',pa[1]);}
+function loop(){if(run){step(+speed.value);draw();}requestAnimationFrame(loop);}
 [r,p].forEach(el=>el.addEventListener("input",()=>{let a=+r.value/100,b=+p.value/100;if(a+b>1)p.value=Math.round((1-a)*100);vr.textContent=(+r.value/100).toFixed(2);vp.textContent=(+p.value/100).toFixed(2);}));
 go.onclick=()=>{run=!run;go.textContent=run?"Pause":"Run";};
 reset.onclick=()=>{init();draw();info.textContent="";};
-mode.onchange=()=>{init();draw();};
-init();loop();
+mode.onchange=()=>{init();draw();};speed.oninput=()=>speedOut.textContent=speed.value;
+function switchRun(){const total=2000,switchAt=+switchAtSlider.value,opponents=[[.8,.1,.1],[.1,.1,.8]],agents=[{name:'RM',plus:false,reg:[0,0,0],sum:[0,0,0]},{name:'RM+',plus:true,reg:[0,0,0],sum:[0,0,0]}],rows=[];for(let t=0;t<total;t++){const o=opponents[t<switchAt?0:1];for(const a of agents){const s=t===0?[.6,.2,.2]:strat(a.reg);for(let i=0;i<3;i++)a.sum[i]+=s[i];const u=[0,1,2].map(i=>o.reduce((v,p,j)=>v+p*U[i][j],0)),v=s.reduce((z,p,i)=>z+p*u[i],0);for(let i=0;i<3;i++){const next=a.reg[i]+u[i]-v;a.reg[i]=a.plus?Math.max(0,next):next}}if(t%10===0||t===total-1)rows.push({t,a:agents.map(x=>{const z=x.sum.reduce((u,v)=>u+v,0);return x.sum.map(v=>v/z)})})}drawSwitch(rows,switchAt);switchInfo.textContent=`At iteration ${switchAt}, the opponent switches from mostly Rock to mostly Scissors. Final average (RM): ${rows.at(-1).a[0].map(x=>x.toFixed(2)).join(', ')} · RM+: ${rows.at(-1).a[1].map(x=>x.toFixed(2)).join(', ')}.`}
+function drawSwitch(rows,switchAt){const c=switchChart,x=c.getContext('2d'),W=c.width,H=c.height;x.clearRect(0,0,W,H);x.strokeStyle=css('--line');x.fillStyle=css('--mut');x.font='15px system-ui';for(let g=0;g<=4;g++){const y=H-28-(H-48)*g/4;x.beginPath();x.moveTo(45,y);x.lineTo(W-12,y);x.stroke();x.fillText((g/4).toFixed(2),4,y+5)}const series=[{a:0,k:1,c:css('--p')},{a:1,k:1,c:css('--s')},{a:0,k:0,c:css('--p'),d:[8,6]},{a:1,k:0,c:css('--s'),d:[8,6]}];for(const s of series){x.strokeStyle=s.c;x.lineWidth=s.d?2:4;x.setLineDash(s.d||[]);x.beginPath();rows.forEach((r,i)=>{const px=45+(W-60)*r.t/2000,py=H-28-(H-48)*r.a[s.a][s.k];i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke()}x.setLineDash([]);const sx=45+(W-60)*switchAt/2000;x.strokeStyle='#d55e00';x.setLineDash([6,5]);x.beginPath();x.moveTo(sx,18);x.lineTo(sx,H-25);x.stroke();x.fillStyle=css('--mut');x.fillText('Solid = Paper, dashed = Rock · Blue = RM, green = RM+ · vertical = switch',46,18)}
+switchAtSlider.oninput=()=>switchOut.textContent=switchAtSlider.value;runSwitch.onclick=switchRun;
+function decomp(){const reach=Math.max(0,+decompReach.value),v=[+decompPass.value,+decompBet.value],mix=(v[0]+v[1])/2,r=v.map(x=>reach*(x-mix)),pos=r.map(x=>Math.max(0,x)),z=pos[0]+pos[1],s=z?pos.map(x=>x/z):[.5,.5];decompLabel.textContent='I = '+decompKey.value;decompResult.textContent=`${(100*s[0]).toFixed(0)}% / ${(100*s[1]).toFixed(0)}%`;$('decomp-math').textContent=`Counterfactual reach = ${reach.toFixed(2)}. Current mix is 50/50, value = ${mix.toFixed(2)}. Regrets: check/fold ${r[0].toFixed(3)}, bet/call ${r[1].toFixed(3)}. Regret matching keeps positive regret and normalizes: ${s.map(x=>(100*x).toFixed(0)+'%').join(' / ')}.`}decompUpdate.onclick=decomp;
+init();step(10);draw();decomp();speedOut.textContent=speed.value;switchOut.textContent=switchAtSlider.value;loop();
 </script></body></html>

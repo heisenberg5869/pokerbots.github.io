@@ -27,17 +27,24 @@ nav:
   - Reference:
       - Notation: notation.md
       - Glossary: glossary.md
+      - Curriculum master plan: plan.md
   - Foundations:
       - 00 Prerequisites: modules/00_prereqs.md
+      - 00 Foundations lab: demos/foundations-module-00.html
       - 01 Kuhn Poker: modules/01_kuhn.md
+      - 01 Kuhn interactive lab: demos/kuhn-module-01.html
       - 02 Regret Matching: modules/02_regret_matching.md
+      - 02 Regret Matching interactive lab: demos/regret_matching_rps.html
   - Small solvable games:
       - 03 Leduc Hold'em: modules/03_leduc.md
       - 03 Leduc interactive lab: demos/leduc-module-03.html
       - 04 Expanded Leduc + MCCFR: modules/04_mccfr.md
+      - 04 Sampling interactive lab: demos/mccfr-module-04.html
   - Real poker:
       - 05 Limit Hold'em: modules/05_limit_holdem.md
+      - 05 Limit Hold'em interactive labs: demos/limit-module-05.html
       - 06 Abstraction & Endgame: modules/06_abstraction_endgame.md
+      - 06 Abstraction interactive lab: demos/abstraction-module-06.html
       - 07 Heads-Up No-Limit: modules/07_nolimit.md
   - Neural era:
       - 08 Deep CFR: modules/08_deep_cfr.md

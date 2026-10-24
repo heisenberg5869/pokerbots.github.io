@@ -111,6 +111,10 @@ the solver as a tool and focus on the game.
 
 ## Interactive lab
 
+Open the [Kuhn Poker browser lab](../demos/kuhn-module-01.html) to explore the deal tree, play against scripted
+opponents, move through the equilibrium family, probe exploitability, and step vanilla CFR. The notebook remains the
+reproducible Python path.
+
 Open [`modules/01_kuhn/notebook.ipynb`](https://github.com/heisenberg5869/pokerbots.github.io/blob/main/modules/01_kuhn/notebook.ipynb)
 and try:
 

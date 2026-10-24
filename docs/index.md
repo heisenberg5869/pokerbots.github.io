@@ -13,6 +13,8 @@ Every module explains one idea from scratch (intuition, math, code, interactive 
 
 See the [Roadmap](roadmap.md) for status of every module, [Notation](notation.md) for symbols, and the [Glossary](glossary.md) for terms.
 
+The complete [curriculum master plan](plan.md) tracks the learning design, interactive labs, verification anchors, and delivery phases.
+
 ## The three levels of "solved"
 
 | Level | Meaning | Example |
