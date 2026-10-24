@@ -7,7 +7,7 @@ import pytest
 
 @pytest.fixture(scope="module")
 def data():
-    path = Path(__file__).parents[1] / "docs" / "demos" / "leduc_data.json"
+    path = Path(__file__).parents[1] / "docs" / "demos" / "leduc-module-03-data.json"
     return json.loads(path.read_text(encoding="utf-8"))
 
 

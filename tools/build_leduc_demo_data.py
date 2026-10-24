@@ -13,7 +13,7 @@ from pokerbot.eval.exploitability import expected_value, exploitability
 from pokerbot.games.leduc import LeducPoker
 from pokerbot.solvers.cfr import CFRTrainer
 
-OUTPUT = ROOT / "docs" / "demos" / "leduc_data.json"
+OUTPUT = ROOT / "docs" / "demos" / "leduc-module-03-data.json"
 CHECKPOINTS = (1, 5, 20, 50)
 VARIANTS = {
     "vanilla": {},
