@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>N-player game tree lab</title><style>
+:root{font:15px/1.5 system-ui,sans-serif;--bg:#f5f7fa;--card:#fff;--ink:#182230;--muted:#536273;--line:#cbd5df;--blue:#0072b2;--orange:#d55e00}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink)}main{max-width:1000px;margin:auto;padding:1rem}section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1rem;margin:1rem 0}h1{margin:.2rem 0}h2{margin:.2rem 0 .5rem;font-size:1.2rem}.row{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}label{display:inline-flex;gap:.45rem;align-items:center;flex-wrap:wrap}input[type=range]{width:150px}button,select,input{font:inherit}button,select{padding:.4rem .6rem;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:6px}button{cursor:pointer}.metric{font-weight:700;color:var(--blue)}.muted{color:var(--muted)}@media(prefers-color-scheme:dark){:root{--bg:#111820;--card:#1b2632;--ink:#edf3f8;--muted:#bdc9d4;--line:#405263;--blue:#56b4e9}}
+</style></head><body><main><p><a href="../modules/11_multiplayer.md">← Module 11 lesson</a></p><h1>N-player game tree & equilibrium swap</h1><p class="muted">Pick seats from different solver runs; mixing equilibria loses.</p>
+<section><h2>Swap test</h2><div class="row">
+<label>Seat 1 run <select id="r1"><option value="0">Run A</option><option value="1">Run B</option><option value="2">Run C</option></select></label>
+<label>Seat 2 run <select id="r2"><option value="0">Run A</option><option value="1" selected>Run B</option><option value="2">Run C</option></select></label>
+<label>Seat 3 run <select id="r3"><option value="0">Run A</option><option value="1">Run B</option><option value="2" selected>Run C</option></select></label>
+<button id="go">Evaluate</button>
+</div>
+<p id="out" class="metric"></p>
+<p class="muted">Payoffs (chips/hand) for pure-seat profiles: Run A all-same = +0.05 each (equilibrium); mixed seats produce losses for at least one seat.</p>
+</section>
+<section><h2>Players</h2><label>Number of players <input id="n" type="range" min="2" max="6" value="3"><output id="no">3</output></label>
+<p>Terminals grow exponentially: 2^depth. For n players, branching multiplies.</p>
+</section>
+</main><script>
+const $=id=>document.getElementById(id);
+// payoff table: profile index -> array payoffs
+const runs=[[0.05,0.05,0.05],[-0.02,0.10,-0.08],[0.12,-0.05,-0.07]];
+function evaluate(){
+  const idx=[$('r1').value,$('r2').value,$('r3').value].map(Number);
+  // mixed profile payoff = base run0 + penalty if not all same
+  const same=idx[0]===idx[1]&&idx[1]===idx[2];
+  let pays;
+  if(same) pays=runs[idx[0]].slice();
+  else pays=idx.map((r,i)=> runs[r][i] - 0.06*Math.abs(r-i));
+  $('out').textContent=`Payoffs: P1 ${pays[0].toFixed(3)}, P2 ${pays[1].toFixed(3)}, P3 ${pays[2].toFixed(3)} ${same?'(equilibrium profile)':'(mixed: at least one seat loses)'}`;
+}
+$('go').onclick=evaluate; evaluate();
+$('n').oninput=()=>$('no').value=$('n').value;
+</script></body></html>

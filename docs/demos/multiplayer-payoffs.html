@@ -1,0 +1,90 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Multiplayer payoffs (ICM) lab</title><style>
+:root{font:15px/1.5 system-ui,sans-serif;--bg:#f5f7fa;--card:#fff;--ink:#182230;--muted:#536273;--line:#cbd5df;--blue:#0072b2;--orange:#d55e00;--green:#00875a}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink)}main{max-width:1000px;margin:auto;padding:1rem}section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:1rem;margin:1rem 0}h1{margin:.2rem 0}h2{margin:.2rem 0 .5rem;font-size:1.2rem}.row{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}label{display:inline-flex;gap:.45rem;align-items:center;flex-wrap:wrap}input[type=range]{width:150px}button,select,input{font:inherit}button,select{padding:.4rem .6rem;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:6px}button{cursor:pointer}.metric{font-weight:700;color:var(--blue)}.muted{color:var(--muted)}.cols{display:grid;grid-template-columns:1fr 1fr;gap:1rem}@media(max-width:650px){.cols{grid-template-columns:1fr}}@media(prefers-color-scheme:dark){:root{--bg:#111820;--card:#1b2632;--ink:#edf3f8;--muted:#bdc9d4;--line:#405263;--blue:#56b4e9}}
+</style></head><body><main><p><a href="../modules/11_multiplayer.md">← Module 11 lesson</a></p><h1>Multiplayer payoffs — chip vs ICM</h1><p class="muted">Three players, prize ladder. Compare chip-EV and prize (ICM) equity.</p>
+<section><h2>Stacks & payouts</h2><div class="row">
+<label>P1 stack <input id="s1" type="range" min="1" max="100" value="50"><output id="s1o">50</output></label>
+<label>P2 stack <input id="s2" type="range" min="1" max="100" value="30"><output id="s2o">30</output></label>
+<label>P3 stack <input id="s3" type="range" min="1" max="100" value="20"><output id="s3o">20</output></label>
+</div><div class="row">
+<label>1st prize <input id="p1" type="number" value="50" style="width:70px"></label>
+<label>2nd prize <input id="p2" type="number" value="30" style="width:70px"></label>
+<label>3rd prize <input id="p3" type="number" value="20" style="width:70px"></label>
+</div>
+<p>Total chips: <span class="metric" id="tot"></span></p>
+<table id="tbl" style="width:100%;border-collapse:collapse"></table>
+</section>
+<section><h2>ICM recursion</h2><p class="muted">ICM equity_i = Σ_j (stack_j/total) × (prize for survivor after j eliminated) averaged over remaining. Implemented recursively.</p>
+<div id="icmout"></div>
+</section>
+</main><script>
+const $=id=>document.getElementById(id);
+function icm(stacks, payouts){
+  // returns prize equity per player
+  const n=stacks.length;
+  // recursive: f(stacks, remainingPrizes) 
+  function rec(st, prizes){
+    // st: array stacks, prizes: array of prize amounts for positions (descending), length = st.length
+    const total=st.reduce((a,b)=>a+b,0);
+    const res=new Array(st.length).fill(0);
+    if(st.length===1){ res[0]=prizes[0]; return res; }
+    for(let i=0;i<st.length;i++){
+      if(st[i]<=0) continue;
+      const prob=st[i]/total;
+      // i finishes first among remaining? Actually standard ICM: iterate over who gets next prize (last place)
+      // We'll do: for each player i, probability they are eliminated next = st[i]/total? 
+    }
+    // Standard ICM recursive: equity_i = sum over j (stack_j/total) * [ prize for j if j wins? ]...
+    // Simpler: implement known recursion: 
+    // ICM(stacks, payouts): if one stack, return [payouts[0]]; 
+    // for each player i: p_i = stack_i/total; equity_i += p_i * (payout for last place? )
+    return res;
+  }
+  // Use well-known ICM algorithm:
+  function icmRec(st, pay){
+    const m=st.length;
+    const total=st.reduce((a,b)=>a+b,0);
+    const out=new Array(m).fill(0);
+    if(m===1){ out[0]=pay[0]; return out; }
+    // each player has probability stack/total of being "first eliminated" -> receives lowest remaining prize
+    const lowest=pay[pay.length-1];
+    for(let i=0;i<m;i++){
+      const p=st[i]/total;
+      out[i]+=p*lowest;
+    }
+    // remove one player at a time? Need recurse for each possible eliminated player
+    for(let elim=0;elim<m;elim++){
+      const p=st[elim]/total;
+      const newSt=st.filter((_,i)=>i!==elim);
+      const newPay=pay.slice(0,-1);
+      const sub=icmRec(newSt,newPay);
+      // map back
+      let idx=0;
+      for(let i=0;i<m;i++){
+        if(i===elim) continue;
+        out[i]+=p*sub[idx++];
+      }
+    }
+    return out;
+  }
+  return icmRec(stacks.slice(), payouts.slice().sort((a,b)=>b-a));
+}
+function render(){
+  const s=[+$('s1').value,+$('s2').value,+$('s3').value];
+  const pay=[+$('p1').value,+$('p2').value,+$('p3').value];
+  const total=s.reduce((a,b)=>a+b,0);
+  $('tot').textContent=total;
+  $('s1o').textContent=s[0];$('s2o').textContent=s[1];$('s3o').textContent=s[2];
+  const chip=s.map(x=>100*x/total);
+  const icmEq=icm(s,pay);
+  const prizeTotal=pay.reduce((a,b)=>a+b,0);
+  let html='<tr><th>Player</th><th>Stack</th><th>Chip %</th><th>ICM $</th><th>ICM %</th></tr>';
+  for(let i=0;i<3;i++){
+    html+=`<tr><td>P${i+1}</td><td>${s[i]}</td><td>${chip[i].toFixed(1)}%</td><td>${icmEq[i].toFixed(2)}</td><td>${(100*icmEq[i]/prizeTotal).toFixed(1)}%</td></tr>`;
+  }
+  $('tbl').innerHTML=html;
+  $('tbl').querySelectorAll('tr').forEach(tr=>tr.style.borderBottom='1px solid var(--line)');
+  $('icmout').innerHTML=`<p>Chip-EV and ICM disagree when stacks are unequal: a short stack's prize equity exceeds its chip share (risk premium). Try stacks 50/30/20.</p>`;
+}
+['s1','s2','s3','p1','p2','p3'].forEach(id=>$(id).addEventListener('input',render));
+render();
+</script></body></html>

@@ -1,0 +1,13 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Variant card</title>
+<style>body{font:15px/1.5 system-ui,sans-serif;max-width:900px;margin:auto;padding:1rem}section{border:1px solid #ccc;border-radius:8px;padding:1rem;margin:1rem 0}pre{background:#f4f4f4;padding:.5rem;overflow:auto}</style></head><body><main>
+<h1>Variant rule card</h1><p>Generate a readable rule card from saved config.</p>
+<section><button id="gen">Generate from saved config</button></section>
+<section><pre id="out"></pre></section>
+<script>
+document.getElementById('gen').onclick=()=>{
+const raw=localStorage.getItem('variantConfig')||'{}';
+const c=JSON.parse(raw);
+const lines=['# '+ (c.players||2)+'-player variant','Deck: '+(c.deck||52),'Hole cards: '+(c.hole||2),'Streets: '+(c.streets||[]).join(' -> '),'Betting: '+(c.betting||'no-limit'),'Peek: '+(c.peek||'none'),'Auctions: '+(c.auction||'none')];
+out.textContent=lines.join('\n');
+};
+</script></main></body></html>

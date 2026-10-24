@@ -5,39 +5,56 @@
 | Advanced | 05, 09 | in progress |
 
 ## Motivation
-_What the previous module could not do, and why this one exists._
+
+PLO adds a fourth hole card and the exactly-two-from-hand rule, exploding hand combinations and equity complexity.
 
 ## What you will learn
-Four hole cards; the exactly-two-from-hand, three-from-board rule; combinatorial explosion of hands and ranges; fast equity estimation; range evaluation; pot-limit bet sizing.
+
+Four hole cards; exactly-two-from-hand, three-from-board; combinatorial growth; equity estimation; pot-limit sizing.
 
 ## What you will build
-PLO hand evaluator and equity engine; range-vs-range equity tables; abstraction ideas for the larger hand space.
+
+Browser labs: hand builder, combination counter, equity lab, failure lab.
 
 ## Intuition first
-_TODO: a tiny worked example and a picture before any formulas._
+
+A PLO hand is not "best five of nine"; you must use exactly two private cards.
 
 ## Formal definition
-_TODO: use the notation in [Notation](../notation.md)._
+
+Legal 5-card hand = choose 2 of 4 hole × choose 3 of 5 board = 6×10 = 60 combinations.
 
 ## Algorithm
-_TODO: pseudocode, then a minimal implementation._
+
+Enumerate all 60 combinations and take max rank tuple.
 
 ## Interactive lab
-_TODO: notebook in `modules/10_plo/` and/or a browser demo._
+
+- [plo-hand-builder.html](../demos/plo-hand-builder.html)
+- [plo-combination-counter.html](../demos/plo-combination-counter.html)
+- [plo-equity-lab.html](../demos/plo-equity-lab.html)
+- [plo-failure-lab.html](../demos/plo-failure-lab.html)
 
 ## Verification
-_TODO: compare against a known answer (exact equilibrium, LP, or a published number)._
+
+Compare against brute-force enumeration.
 
 ## Exercises
-- **Recall:** _TODO_
-- **Implement:** _TODO_
-- **Extend:** _TODO_
+
+- Recall: why does PLO have more draws?
+- Implement: Omaha evaluator.
+- Extend: pot-limit tree.
 
 ## Where this breaks
-Everything so far assumed two players in a zero-sum game. Add a third player and the guarantees vanish (Module 11).
+
+Hold'em intuition fails; more variance.
 
 ## Checkpoint — you are done when…
-_TODO: 3 to 5 concrete things you can do or explain._
+
+- you can enumerate legal PLO hands,
+- you can explain combo count,
+- you can estimate equity.
 
 ## Further reading
-_TODO_
+
+- PLO strategy references.

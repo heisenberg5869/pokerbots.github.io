@@ -1,0 +1,8 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Opponent Profile Lab</title>
+<style>body{font:15px/1.5 system-ui,sans-serif;margin:0;background:#f5f7fa;color:#182230}main{max-width:900px;margin:auto;padding:1rem}section{background:#fff;border:1px solid #cbd5df;border-radius:10px;padding:1rem;margin:1rem 0}button{padding:.4rem .65rem}</style></head><body><main>
+<p><a href="../modules/12_opponent_modelling.md">← Module 12</a></p><h1>Opponent Profile Lab</h1>
+<section><h2>Observed actions</h2><label>Folds <input id="f" type="number" value="30"></label><label>Calls <input id="c" type="number" value="10"></label><label>Raises <input id="r" type="number" value="5"></label><button id="upd">Update profile</button><p id="out"></p></section>
+<script>
+function upd(){const f=+document.getElementById('f').value,c=+document.getElementById('c').value,r=+document.getElementById('r').value,t=f+c+r;const p={fold:f/t,call:c/t,raise:r/t};document.getElementById('out').textContent=JSON.stringify(p,null,2)+' total='+t;}
+document.getElementById('upd').onclick=upd;upd();
+</script></main></body></html>

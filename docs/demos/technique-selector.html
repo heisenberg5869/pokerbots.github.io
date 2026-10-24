@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Technique Selector - Module 14</title>
+<style>body{font-family:system-ui;margin:2rem;}select{padding:.5rem;}</style></head>
+<body><h1>Technique Selector</h1>
+<p>Pick a scenario to see recommended technique.</p>
+<select id="s" onchange="show()">
+<option value="small">Small game, tabular</option>
+<option value="large">Large game, abstraction</option>
+<option value="realtime">Real-time search</option>
+</select>
+<div id="out" style="margin-top:1rem;font-weight:bold;"></div>
+<script>
+function show(){const v=document.getElementById('s').value;const m={small:'CFR+ tabular',large:'MCCFR + abstraction',realtime:'Blueprint + subgame solving'};document.getElementById('out').textContent=m[v];}
+show();
+</script></body></html>

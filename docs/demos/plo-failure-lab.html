@@ -1,0 +1,7 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PLO failure lab</title><style>body{font:15px system-ui,sans-serif;background:#101820;color:#e8f1f3;margin:0;padding:20px}main{max-width:800px;margin:auto}button{padding:8px 12px;margin:4px}.out{margin-top:10px;padding:10px;border:1px solid #314854;border-radius:8px}</style></head><body><main><h1>Failure lab: Hold'em-style vs Omaha evaluation</h1><p>Same 9 cards; wrong rule uses best 5 of 9, correct uses exactly 2 hole + 3 board.</p><button onclick="run()">Random deal</button><div class="out" id="out"></div><script>
+function name(c){return '23456789TJQKA'[c%13]+['♠','♥','♦','♣'][Math.floor(c/13)]}
+function fiveRank(cs){let rs=cs.map(c=>c%13+2).sort((a,b)=>b-a);return rs[0]} // placeholder-ish strength
+function bestAny7(cards){return cards.map(name).join(' ')}
+function run(){const deck=[...Array(52).keys()].sort(()=>Math.random()-.5);const hole=deck.slice(0,4),board=deck.slice(4,9);document.getElementById('out').innerHTML='Hole: '+hole.map(name).join(' ')+'<br>Board: '+board.map(name).join(' ')+'<br>Wrong (best 5 of 9) ignores the exactly-two rule.<br>Correct Omaha requires choosing 2 of 4 hole and 3 of 5 board.'}
+run();
+</script></main></body></html>

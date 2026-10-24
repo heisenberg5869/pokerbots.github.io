@@ -1,0 +1,66 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Module 08 · Reservoir sampling lab</title>
+<style>
+:root{color-scheme:dark;--bg:#101820;--panel:#182630;--line:#314854;--text:#e8f1f3;--muted:#9fb3bb;--green:#72dbb2;--gold:#f6c875;--red:#f08d83}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0,#203b3c,var(--bg) 55%);font:15px/1.5 system-ui,sans-serif;color:var(--text)}
+main{max-width:1100px;margin:auto;padding:32px 22px 70px}
+h1{font-size:2rem;margin:4px 0 10px}h2{font-size:1.25rem;margin:0 0 8px}
+.eyebrow{color:var(--green);text-transform:uppercase;letter-spacing:.13em;font-size:.78rem;font-weight:750}
+.lede,.muted{color:var(--muted)}
+.card{background:linear-gradient(145deg,#1d303a,#14222b);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 14px 40px #0003;margin-top:16px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
+button,select,input{font:inherit;color:var(--text);background:#10202a;border:1px solid #45616c;border-radius:9px;padding:8px 11px}
+button{cursor:pointer}button.primary{background:#236653;border-color:#3d9a7a;color:white}
+input[type=range]{padding:0;accent-color:var(--green)}
+.pill{display:inline-flex;gap:6px;align-items:baseline;border:1px solid var(--line);border-radius:999px;padding:5px 11px;color:var(--muted);margin:4px}
+.pill b{color:var(--text)}
+.callout{border-left:3px solid var(--gold);background:#f6c8750f;border-radius:0 9px 9px 0;padding:9px 12px;margin:12px 0;font-size:.9rem;color:#e6d9bd}
+.bar{height:14px;background:#0c171e;border-radius:9px;overflow:hidden;margin:6px 0}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#f08d83,#f6c875,#72dbb2);transition:width .2s}
+.back{color:var(--muted);text-decoration:none;font-size:.85rem}
+</style></head><body><main>
+<a class="back" href="../modules/08_deep_cfr.md">← Module 08</a>
+<p class="eyebrow">Module 08 · Interactive lab</p>
+<h1>Reservoir sampling lab</h1>
+<p class="lede">Stream samples into a fixed-capacity reservoir and watch replacement counts. Values illustrative.</p>
+<div class="card">
+  <h2>Controls</h2>
+  <div class="row">
+    <label>Capacity <input id="cap" type="range" min="10" max="200" step="10" value="50"></label>
+    <label>Stream size <input id="n" type="range" min="50" max="2000" step="50" value="500"></label>
+    <button class="primary" id="run">Run</button>
+    <button id="reset">Reset</button>
+  </div>
+  <div class="row" id="metrics"></div>
+  <div class="bar"><i id="fill" style="width:0%"></i></div>
+</div>
+<div class="card">
+  <h2>Show the math</h2>
+  <p class="muted">Each new item replaces a random slot with probability cap/count. Expected final counts uniform over all stream items.</p>
+</div>
+<div class="card">
+  <h2>Break it</h2>
+  <p class="muted">Small capacity vs huge stream: early items nearly all evicted; counts still uniform in expectation. Predict before running.</p>
+</div>
+</main>
+<script>
+let counts=[];
+function run(){
+ const cap=+document.getElementById('cap').value;const N=+document.getElementById('n').value;
+ const res=[];counts=new Array(cap).fill(0);
+ for(let t=0;t<N;t++){
+   if(t<cap){res.push(t);counts[t]++;}
+   else{const j=Math.floor(Math.random()*(t+1));if(j<cap){const old=res[j];counts[old]--;res[j]=t;counts[t%cap]++;}}
+ }
+ const min=Math.min(...counts),max=Math.max(...counts);
+ document.getElementById('metrics').innerHTML=
+  `<span class="pill">capacity <b>${cap}</b></span>
+   <span class="pill">stream <b>${N}</b></span>
+   <span class="pill">min count <b>${min}</b></span>
+   <span class="pill">max count <b>${max}</b></span>`;
+ document.getElementById('fill').style.width='100%';
+}
+document.getElementById('run').addEventListener('click',run);
+document.getElementById('reset').addEventListener('click',()=>{counts=[];document.getElementById('metrics').innerHTML='';document.getElementById('fill').style.width='0%';});
+run();
+</script></body></html>

@@ -49,11 +49,33 @@ nav:
       - 07 Push/fold interactive lab: demos/pushfold-module-07.html
   - Neural era:
       - 08 Deep CFR: modules/08_deep_cfr.md
+      - 08 Deep CFR training lab: demos/deep-cfr-training-lab.html
+      - 08 Deep CFR reservoir lab: demos/deep-cfr-reservoir-lab.html
+      - 08 Deep CFR strategy compare lab: demos/deep-cfr-strategy-compare.html
       - 09 Value Nets & Search: modules/09_value_nets_search.md
+      - 09 Belief state explorer: demos/belief-state-explorer.html
+      - 09 Search tree lab: demos/search-tree-lab.html
+      - 09 Value network lab: demos/value-network-lab.html
   - Hard frontier:
       - 10 Pot-Limit Omaha: modules/10_plo.md
+      - 10 PLO hand builder: demos/plo-hand-builder.html
+      - 10 PLO combination counter: demos/plo-combination-counter.html
+      - 10 PLO equity lab: demos/plo-equity-lab.html
+      - 10 PLO failure lab: demos/plo-failure-lab.html
       - 11 Multiplayer: modules/11_multiplayer.md
+      - 11 Multiplayer payoffs lab: demos/multiplayer-payoffs.html
+      - 11 N-player game tree lab: demos/nplayer-game-tree.html
+      - 11 Population arena lab: demos/population-arena.html
       - 12 Opponent Modelling: modules/12_opponent_modelling.md
+      - 12 Opponent profile lab: demos/opponent-profile-lab.html
+      - 12 Bayesian opponent lab: demos/bayesian-opponent-lab.html
+      - 12 Exploitability-profit frontier: demos/exploitability-profit-frontier.html
   - Design your own:
       - 13 Custom Variants: modules/13_variants.md
+      - 13 Variant rules builder lab: demos/variant-rules-builder.html
+      - 13 Variant card lab: demos/variant-card.html
+      - 13 Variant tree estimator lab: demos/variant-tree-estimator.html
       - 14 Case Studies: modules/14_case_studies.md
+      - 14 Solved ladder lab: demos/solved-ladder.html
+      - 14 Technique selector lab: demos/technique-selector.html
+      - 14 Compute comparison lab: demos/compute-comparison.html

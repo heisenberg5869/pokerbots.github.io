@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Module 09 — Belief State Explorer</title>
+<style>
+:root{color-scheme:dark;--bg:#101820;--panel:#182630;--line:#314854;--text:#e8f1f3;--muted:#9fb3bb;--green:#72dbb2;--gold:#f6c875;--red:#f08d83}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0,#203b3c,var(--bg) 55%);font:15px/1.5 system-ui,sans-serif;color:var(--text)}
+main{max-width:1000px;margin:auto;padding:32px 22px 70px}
+h1{font-size:clamp(1.8rem,4vw,3rem)}h2{font-size:1.2rem}
+.card{background:linear-gradient(145deg,#1d303a,#14222b);border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:16px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
+button{font:inherit;color:var(--text);background:#10202a;border:1px solid #45616c;border-radius:9px;padding:8px 11px;cursor:pointer}
+button:hover{border-color:var(--green);color:var(--green)}
+button.primary{background:#236653;border-color:#3d9a7a;color:white}
+.pill{display:inline-flex;gap:6px;align-items:baseline;border:1px solid var(--line);border-radius:999px;padding:5px 11px;color:var(--muted)}
+.pill b{color:var(--text)}
+.metric{font-size:1.5rem;color:var(--green);font-weight:750}
+.bar{height:14px;background:#0c171e;border-radius:9px;overflow:hidden;margin:6px 0}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#f08d83,#f6c875,#72dbb2);transition:width .2s}
+.small{color:var(--muted);font-size:.88rem}
+.callout{border-left:3px solid var(--gold);background:#f6c8750f;border-radius:0 9px 9px 0;padding:9px 12px;margin:12px 0;font-size:.9rem;color:#e6d9bd}
+table{width:100%;border-collapse:collapse;margin-top:8px}td,th{padding:6px;border-bottom:1px solid var(--line);text-align:left}
+</style></head><body><main>
+<div style="color:var(--green);text-transform:uppercase;letter-spacing:.13em;font-size:.78rem;font-weight:750">Pokerbots · Module 09</div>
+<h1>Belief State Explorer</h1>
+<p class="small">A public belief state is a distribution over private hands. Pick opponent action; belief updates via Bayes.</p>
+
+<section class="card">
+<h2>Belief over 4 hands</h2>
+<div class="row">
+  <label>Prior hand A <input id="pa" type="range" min="0" max="100" value="25"> <span id="pav">25</span>%</label>
+  <label>B <input id="pb" type="range" min="0" max="100" value="25"> <span id="pbv">25</span>%</label>
+  <label>C <input id="pc" type="range" min="0" max="100" value="25"> <span id="pcv">25</span>%</label>
+  <label>D <input id="pd" type="range" min="0" max="100" value="25"> <span id="pdv">25</span>%</label>
+</div>
+<div class="row">
+  <button id="actBet" class="primary">Opponent bets</button>
+  <button id="actCheck">Opponent checks</button>
+  <button id="reset">Reset</button>
+  <button id="showMath">Show math</button>
+</div>
+<div id="math" class="callout" style="display:none">Posterior ∝ likelihood(action|hand)·prior. Likelihoods: bet {A:.6,B:.4,C:.2,D:.1}, check complements.</div>
+<table id="tbl"><thead><tr><th>Hand</th><th>Prior</th><th>Posterior</th><th>Bar</th></tr></thead><tbody></tbody></table>
+<div class="row"><span class="pill">Sum prior <b id="sp">1.00</b></span><span class="pill">Sum post <b id="spo">1.00</b></span><span class="pill">Entropy <b id="ent">-</b></span></div>
+</section>
+
+<section class="card">
+<h2>Break it</h2>
+<p class="small">Set all prior on one hand, then bet — belief collapses; check — may be impossible (division by zero). Reset to recover.</p>
+</section>
+</main>
+<script>
+const L={bet:[.6,.4,.2,.1],check:[.4,.6,.8,.9]};
+let prior=[.25,.25,.25,.25], post=null;
+function readPrior(){ prior=[+pa.value,+pb.value,+pc.value,+pd.value].map(x=>x/100); const s=prior.reduce((a,b)=>a+b,0); prior=prior.map(x=>x/s); }
+function update(action){
+  readPrior();
+  const lk=L[action];
+  const unn=prior.map((p,i)=>p*lk[i]);
+  const Z=unn.reduce((a,b)=>a+b,0);
+  post=unn.map(x=>x/Z);
+  render();
+}
+function entropy(p){ return -p.reduce((a,x)=>a+(x>0?x*Math.log2(x):0),0); }
+function render(){
+  readPrior();
+  const p=post||prior;
+  const tb=document.querySelector('#tbl tbody'); tb.innerHTML='';
+  ['A','B','C','D'].forEach((h,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${h}</td><td>${prior[i].toFixed(3)}</td><td>${p[i].toFixed(3)}</td><td><div class="bar"><i style="width:${(p[i]*100).toFixed(1)}%"></i></div></td>`;
+    tb.appendChild(tr);
+  });
+  document.getElementById('sp').textContent=prior.reduce((a,b)=>a+b,0).toFixed(2);
+  document.getElementById('spo').textContent=p.reduce((a,b)=>a+b,0).toFixed(2);
+  document.getElementById('ent').textContent=entropy(p).toFixed(3);
+  // url state
+  const u=new URL(location.href); u.searchParams.set('prior',prior.map(x=>x.toFixed(3)).join(',')); if(post)u.searchParams.set('post',post.map(x=>x.toFixed(3)).join(',')); history.replaceState(null,'',u);
+}
+['pa','pb','pc','pd'].forEach((id,i)=>{const el=document.getElementById(id); el.addEventListener('input',()=>{document.getElementById(id+'v').textContent=el.value; render();});});
+document.getElementById('actBet').onclick=()=>update('bet');
+document.getElementById('actCheck').onclick=()=>update('check');
+document.getElementById('reset').onclick=()=>{prior=[.25,.25,.25,.25];post=null;['pa','pb','pc','pd'].forEach((id,i)=>{document.getElementById(id).value=25;document.getElementById(id+'v').textContent=25;});render();};
+document.getElementById('showMath').onclick=()=>{const m=document.getElementById('math');m.style.display=m.style.display==='none'?'block':'none';};
+// load url state
+const params=new URLSearchParams(location.search); if(params.get('prior')){const arr=params.get('prior').split(',').map(Number); prior=arr; ['pa','pb','pc','pd'].forEach((id,i)=>{document.getElementById(id).value=Math.round(arr[i]*100);document.getElementById(id+'v').textContent=Math.round(arr[i]*100);});}
+render();
+</script></body></html>

@@ -1,0 +1,13 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Variant tree estimator</title>
+<style>body{font:15px/1.5 system-ui,sans-serif;max-width:900px;margin:auto;padding:1rem}input{width:100%}section{border:1px solid #ccc;border-radius:8px;padding:1rem;margin:1rem 0}</style></head><body><main>
+<h1>Variant tree estimator</h1>
+<section><label>Players <input id="p" type="number" value="2"></label><label>Actions per node <input id="a" type="number" value="3"></label><label>Depth <input id="d" type="number" value="4"></label><label>Info sets factor <input id="f" type="number" value="10"></label><button id="est">Estimate</button></section>
+<section><div id="out"></div></section>
+<script>
+document.getElementById('est').onclick=()=>{
+const p=+pInput.value||2, a=+aInput.value||3, d=+dInput.value||4, f=+fInput.value||10;
+const states=Math.pow(a,d);const infosets=Math.round(states/f);const mem=(states*8/1e6).toFixed(2);
+out.innerHTML='Estimated decision nodes: '+states.toLocaleString()+'<br>Information sets: '+infosets.toLocaleString()+'<br>Approx memory (MB): '+mem;
+};
+const pInput=document.getElementById('p'),aInput=document.getElementById('a'),dInput=document.getElementById('d'),fInput=document.getElementById('f');
+</script></main></body></html>

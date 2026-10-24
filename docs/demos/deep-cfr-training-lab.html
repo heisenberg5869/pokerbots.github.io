@@ -1,0 +1,99 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Module 08 · Deep CFR training lab</title>
+<style>
+:root{color-scheme:dark;--bg:#101820;--panel:#182630;--line:#314854;--text:#e8f1f3;--muted:#9fb3bb;--green:#72dbb2;--gold:#f6c875;--red:#f08d83}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0,#203b3c,var(--bg) 55%);font:15px/1.5 system-ui,sans-serif;color:var(--text)}
+main{max-width:1100px;margin:auto;padding:32px 22px 70px}
+h1{font-size:2rem;margin:4px 0 10px}h2{font-size:1.25rem;margin:0 0 8px}h3{font-size:.9rem;margin:14px 0 7px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.eyebrow{color:var(--green);text-transform:uppercase;letter-spacing:.13em;font-size:.78rem;font-weight:750}
+.lede,.muted{color:var(--muted)}
+.card{background:linear-gradient(145deg,#1d303a,#14222b);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 14px 40px #0003;margin-top:16px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
+button,select,input{font:inherit;color:var(--text);background:#10202a;border:1px solid #45616c;border-radius:9px;padding:8px 11px}
+button{cursor:pointer}button.primary{background:#236653;border-color:#3d9a7a;color:white}
+input[type=range]{padding:0;accent-color:var(--green)}
+.pill{display:inline-flex;gap:6px;align-items:baseline;border:1px solid var(--line);border-radius:999px;padding:5px 11px;color:var(--muted);margin:4px}
+.pill b{color:var(--text)}
+.callout{border-left:3px solid var(--gold);background:#f6c8750f;border-radius:0 9px 9px 0;padding:9px 12px;margin:12px 0;font-size:.9rem;color:#e6d9bd}
+#curve{width:100%;height:260px;display:block;background:#0c171e;border-radius:9px}
+.back{color:var(--muted);text-decoration:none;font-size:.85rem}
+</style></head><body><main>
+<a class="back" href="../modules/08_deep_cfr.md">← Module 08</a>
+<p class="eyebrow">Module 08 · Interactive lab</p>
+<h1>Deep CFR training curve (illustrative)</h1>
+<p class="lede">Simulate Deep CFR iterations: loss on regret buffer vs exploitability. Adjust net capacity and sample count. Values are illustrative, not measured.</p>
+<div class="card">
+  <h2>Controls</h2>
+  <div class="row">
+    <label>Iterations <input id="iters" type="range" min="5" max="60" value="20"></label>
+    <label>Samples/iter <input id="samples" type="range" min="100" max="5000" step="100" value="1000"></label>
+    <label>Net width <input id="width" type="range" min="32" max="512" step="32" value="128"></label>
+    <button class="primary" id="run">Run</button>
+    <button id="reset">Reset</button>
+  </div>
+  <canvas id="curve"></canvas>
+  <div class="row" id="metrics"></div>
+</div>
+<div class="card">
+  <h2>Show the math</h2>
+  <p class="muted">Loss = MSE between net regret prediction and reservoir target. Exploitability estimated from strategy net. Illustrative decay: exp ~ C / sqrt(N) scaled by 1/sqrt(samples) and 1/sqrt(width).</p>
+</div>
+<div class="card">
+  <h2>Break it</h2>
+  <p class="muted">Set samples very low (100) and width huge (512): overfitting makes exploitability plateau. Use "Share" to encode state in URL.</p>
+  <button id="share">Copy shareable URL</button>
+  <span id="sharemsg" class="muted"></span>
+</div>
+</main>
+<script>
+const params=new URLSearchParams(location.search);
+const qs=k=>params.get(k);
+function init(){ if(qs('iters')) document.getElementById('iters').value=qs('iters');
+ if(qs('samples')) document.getElementById('samples').value=qs('samples');
+ if(qs('width')) document.getElementById('width').value=qs('width');}
+init();
+const canvas=document.getElementById('curve');const ctx=canvas.getContext('2d');
+function resize(){canvas.width=canvas.clientWidth*devicePixelRatio;canvas.height=260*devicePixelRatio;ctx.scale(devicePixelRatio,devicePixelRatio);}
+resize();window.addEventListener('resize',()=>{ctx.setTransform(1,0,0,1,0,0);resize();draw();});
+let data=[];
+function run(){
+ const N=+document.getElementById('iters').value;
+ const S=+document.getElementById('samples').value;
+ const W=+document.getElementById('width').value;
+ data=[];
+ let exp=1.0;
+ for(let i=1;i<=N;i++){
+   const noise=0.3/Math.sqrt(S/1000)+0.2/Math.sqrt(W/128);
+   exp=Math.max(0.001, exp*0.85 + (Math.random()-0.5)*noise*0.05);
+   const loss=Math.max(0.0001, 1.2/Math.sqrt(i*S/1000)+noise*0.1);
+   data.push({i,exp,loss});
+ }
+ draw();
+ const last=data[data.length-1];
+ document.getElementById('metrics').innerHTML=
+  `<span class="pill">final exploitability <b>${last.exp.toFixed(4)}</b></span>
+   <span class="pill">final loss <b>${last.loss.toFixed(4)}</b></span>
+   <span class="pill">iterations <b>${N}</b></span>`;
+}
+function draw(){
+ const w=canvas.clientWidth,h=260;ctx.clearRect(0,0,w,h);
+ if(!data.length) return;
+ const maxExp=Math.max(...data.map(d=>d.exp));
+ ctx.strokeStyle='#72dbb2';ctx.lineWidth=2;ctx.beginPath();
+ data.forEach((d,idx)=>{const x=idx/(data.length-1)*(w-20)+10;const y=h-10-(d.exp/maxExp)*(h-30); idx?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();
+ ctx.strokeStyle='#f6c875';ctx.beginPath();
+ const maxL=Math.max(...data.map(d=>d.loss));
+ data.forEach((d,idx)=>{const x=idx/(data.length-1)*(w-20)+10;const y=h-10-(d.loss/maxL)*(h-30); idx?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();
+ ctx.fillStyle='#9fb3bb';ctx.font='12px system-ui';ctx.fillText('green=exploitability  gold=loss',10,16);
+}
+document.getElementById('run').addEventListener('click',run);
+document.getElementById('reset').addEventListener('click',()=>{data=[];draw();document.getElementById('metrics').innerHTML='';});
+document.getElementById('share').addEventListener('click',()=>{
+ const u=new URL(location.href);
+ u.searchParams.set('iters',document.getElementById('iters').value);
+ u.searchParams.set('samples',document.getElementById('samples').value);
+ u.searchParams.set('width',document.getElementById('width').value);
+ navigator.clipboard.writeText(u.toString());document.getElementById('sharemsg').textContent='copied';
+});
+run();
+</script></body></html>

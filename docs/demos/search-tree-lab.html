@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Module 09 — Search Tree Lab</title>
+<style>
+:root{color-scheme:dark;--bg:#101820;--panel:#182630;--line:#314854;--text:#e8f1f3;--muted:#9fb3bb;--green:#72dbb2;--gold:#f6c875;--red:#f08d83}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0,#203b3c,var(--bg) 55%);font:15px/1.5 system-ui,sans-serif;color:var(--text)}
+main{max-width:1000px;margin:auto;padding:32px 22px 70px}
+.card{background:linear-gradient(145deg,#1d303a,#14222b);border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:16px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
+button{font:inherit;color:var(--text);background:#10202a;border:1px solid #45616c;border-radius:9px;padding:8px 11px;cursor:pointer}
+button:hover{border-color:var(--green);color:var(--green)}
+button.primary{background:#236653;border-color:#3d9a7a;color:white}
+.pill{display:inline-flex;gap:6px;align-items:baseline;border:1px solid var(--line);border-radius:999px;padding:5px 11px;color:var(--muted)}
+.pill b{color:var(--text)}
+.metric{font-size:1.5rem;color:var(--green);font-weight:750}
+.small{color:var(--muted);font-size:.88rem}
+.callout{border-left:3px solid var(--gold);background:#f6c8750f;border-radius:0 9px 9px 0;padding:9px 12px;margin:12px 0;font-size:.9rem;color:#e6d9bd}
+</style></head><body><main>
+<div style="color:var(--green);text-transform:uppercase;letter-spacing:.13em;font-size:.78rem;font-weight:750">Pokerbots · Module 09</div>
+<h1>Search Tree Lab</h1>
+<p class="small">Depth-limited search: choose depth; leaf values from a value net (simulated). Compare exact vs depth-limited.</p>
+<section class="card">
+<div class="row">
+  <label>Depth <input id="depth" type="range" min="1" max="6" value="3"> <b id="dv">3</b></label>
+  <label>Branch <input id="branch" type="range" min="2" max="4" value="2"> <b id="bv">2</b></label>
+  <button id="run" class="primary">Run search</button>
+  <button id="reset">Reset</button>
+  <button id="showMath">Show math</button>
+</div>
+<div id="math" class="callout" style="display:none">Value(root)=min/max over actions of [immediate + γ·V(leaf)]. Depth-limited replaces deep leaves with V_θ.</div>
+<div class="row"><span class="pill">Nodes visited <b id="nodes">0</b></span><span class="pill">Root value <b id="val">-</b></span><span class="pill">Exact value <b id="ex">-</b></span><span class="pill">Error <b id="err">-</b></span></div>
+<canvas id="c" width="600" height="300" style="background:#0c171e;border-radius:9px;width:100%"></canvas>
+</section>
+<section class="card">
+<h2>Break it</h2>
+<p class="small">Depth 1 → huge error; depth 6 → expensive. Watch nodes explode.</p>
+</section>
+</main>
+<script>
+function evalNode(depth,branch){
+  if(depth===0) return Math.random()*2-1; // leaf value net
+  let best=-Infinity;
+  for(let i=0;i<branch;i++){ best=Math.max(best, 0.1*(Math.random()-0.5)+0.9*evalNode(depth-1,branch)); }
+  return best;
+}
+function countNodes(depth,branch){ if(depth===0) return 1; let n=1; for(let i=0;i<branch;i++) n+=countNodes(depth-1,branch); return n; }
+document.getElementById('depth').oninput=e=>{document.getElementById('dv').textContent=e.target.value;};
+document.getElementById('branch').oninput=e=>{document.getElementById('bv').textContent=e.target.value;};
+document.getElementById('run').onclick=()=>{
+  const d=+document.getElementById('depth').value, b=+document.getElementById('branch').value;
+  const v=evalNode(d,b); const ex=0.5; // toy exact
+  document.getElementById('nodes').textContent=countNodes(d,b);
+  document.getElementById('val').textContent=v.toFixed(3);
+  document.getElementById('ex').textContent=ex.toFixed(3);
+  document.getElementById('err').textContent=Math.abs(v-ex).toFixed(3);
+  const u=new URL(location.href); u.searchParams.set('depth',d); u.searchParams.set('branch',b); history.replaceState(null,'',u);
+};
+document.getElementById('reset').onclick=()=>{document.getElementById('depth').value=3;document.getElementById('branch').value=2;document.getElementById('dv').textContent=3;document.getElementById('bv').textContent=2;};
+document.getElementById('showMath').onclick=()=>{const m=document.getElementById('math');m.style.display=m.style.display==='none'?'block':'none';};
+const p=new URLSearchParams(location.search); if(p.get('depth')){document.getElementById('depth').value=p.get('depth');document.getElementById('dv').textContent=p.get('depth');} if(p.get('branch')){document.getElementById('branch').value=p.get('branch');document.getElementById('bv').textContent=p.get('branch');}
+</script></body></html>

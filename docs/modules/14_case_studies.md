@@ -2,7 +2,7 @@
 
 | Level | Prerequisites | Status |
 |---|---|---|
-| Research | all earlier | in progress |
+| Research | all earlier | draft |
 
 ## Motivation
 The preceding modules build poker solvers from first principles. This module steps back and asks what the headline results (Cepheus, DeepStack, Libratus, Pluribus, ReBeL) actually achieved, how they relate, and what remains open.
@@ -27,17 +27,19 @@ A solver being "strong" is not the same as a game being "solved". Solving is a s
 
 | System | Game | Approach | Result |
 |---|---|---|---|
-| Cepheus | HU Limit Hold'em | CFR+ with abstraction? (exact-ish) | Weakly solved |
+| Cepheus | HU Limit Hold'em | CFR+ | Weakly solved |
 | DeepStack | HU No-Limit | Depth-limited search + value net | Beat pros |
 | Libratus | HU No-Limit | Blueprint + subgame solving | Beat pros |
 | Pluribus | 6-max No-Limit | Blueprint + real-time search | Beat pros |
-| ReBeL | HU No-Limit / other | Self-play + search + value net (model-free-ish) | Strong play |
+| ReBeL | HU No-Limit / other | Self-play + search + value net | Strong play |
 
 ## Algorithm
 No single algorithm; synthesis. Each system combines abstraction, search, and learning. See modules 06, 07, 08, 09.
 
 ## Interactive lab
-Notebook stub in `modules/14_case_studies/`.
+- Solved ladder: demos/solved-ladder.html
+- Technique selector: demos/technique-selector.html
+- Compute comparison: demos/compute-comparison.html
 
 ## Verification
 Classify each game in repo (Kuhn, Leduc, push/fold) by solved-level.

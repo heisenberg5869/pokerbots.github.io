@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Module 09 — Value Network Lab</title>
+<style>
+:root{color-scheme:dark;--bg:#101820;--panel:#182630;--line:#314854;--text:#e8f1f3;--muted:#9fb3bb;--green:#72dbb2;--gold:#f6c875;--red:#f08d83}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0,#203b3c,var(--bg) 55%);font:15px/1.5 system-ui,sans-serif;color:var(--text)}
+main{max-width:1000px;margin:auto;padding:32px 22px 70px}
+.card{background:linear-gradient(145deg,#1d303a,#14222b);border:1px solid var(--line);border-radius:18px;padding:20px;margin-top:16px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}
+button{font:inherit;color:var(--text);background:#10202a;border:1px solid #45616c;border-radius:9px;padding:8px 11px;cursor:pointer}
+button:hover{border-color:var(--green);color:var(--green)}
+button.primary{background:#236653;border-color:#3d9a7a;color:white}
+.pill{display:inline-flex;gap:6px;align-items:baseline;border:1px solid var(--line);border-radius:999px;padding:5px 11px;color:var(--muted)}
+.pill b{color:var(--text)}
+.metric{font-size:1.5rem;color:var(--green);font-weight:750}
+.small{color:var(--muted);font-size:.88rem}
+.callout{border-left:3px solid var(--gold);background:#f6c8750f;border-radius:0 9px 9px 0;padding:9px 12px;margin:12px 0;font-size:.9rem;color:#e6d9bd}
+.bar{height:14px;background:#0c171e;border-radius:9px;overflow:hidden;margin:6px 0}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#f08d83,#f6c875,#72dbb2);transition:width .2s}
+</style></head><body><main>
+<div style="color:var(--green);text-transform:uppercase;letter-spacing:.13em;font-size:.78rem;font-weight:750">Pokerbots · Module 09</div>
+<h1>Value Network Lab</h1>
+<p class="small">Train a tiny value net by gradient descent on leaf targets; watch MSE drop.</p>
+<section class="card">
+<div class="row">
+  <label>Learning rate <input id="lr" type="range" min="1" max="50" value="10"> <b id="lrv">0.10</b></label>
+  <label>Steps <input id="steps" type="range" min="10" max="200" value="50"> <b id="sv">50</b></label>
+  <button id="train" class="primary">Train</button>
+  <button id="reset">Reset</button>
+  <button id="showMath">Show math</button>
+</div>
+<div id="math" class="callout" style="display:none">L=½(V_θ(β)-y)²; θ←θ-η∇L.</div>
+<div class="row"><span class="pill">MSE <b id="mse">-</b></span><span class="pill">Weights <b id="w">-</b></span></div>
+<div class="bar"><i id="bar" style="width:0%"></i></div>
+</section>
+<section class="card">
+<h2>Break it</h2>
+<p class="small">LR too high → diverge; too low → slow. Reset to recover.</p>
+</section>
+</main>
+<script>
+let w=0.5, mse=1;
+function target(){ return Math.sin(Math.random()*Math.PI); }
+const targets=Array.from({length:20},target);
+function predict(x){ return w*x; }
+function train(){
+  const lr=+document.getElementById('lr').value/100;
+  const steps=+document.getElementById('steps').value;
+  for(let s=0;s<steps;s++){
+    let g=0,loss=0;
+    targets.forEach((y,i)=>{const x=(i+1)/20; const e=predict(x)-y; g+=e*x; loss+=e*e;});
+    w -= lr*g/targets.length;
+    mse=loss/targets.length;
+  }
+  document.getElementById('mse').textContent=mse.toFixed(4);
+  document.getElementById('w').textContent=w.toFixed(4);
+  document.getElementById('bar').style.width=Math.max(0,Math.min(100,(1-mse)*100))+'%';
+  const u=new URL(location.href); u.searchParams.set('lr',lr); u.searchParams.set('steps',steps); history.replaceState(null,'',u);
+}
+document.getElementById('lr').oninput=e=>{document.getElementById('lrv').textContent=(e.target.value/100).toFixed(2);};
+document.getElementById('steps').oninput=e=>{document.getElementById('sv').textContent=e.target.value;};
+document.getElementById('train').onclick=train;
+document.getElementById('reset').onclick=()=>{w=0.5;mse=1;document.getElementById('mse').textContent='-';document.getElementById('w').textContent=w.toFixed(4);document.getElementById('bar').style.width='0%';};
+document.getElementById('showMath').onclick=()=>{const m=document.getElementById('math');m.style.display=m.style.display==='none'?'block':'none';};
+document.getElementById('w').textContent=w.toFixed(4);
+</script></body></html>

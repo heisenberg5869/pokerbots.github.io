@@ -1,0 +1,16 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Variant rules builder</title>
+<style>body{font:15px/1.5 system-ui,sans-serif;max-width:900px;margin:auto;padding:1rem}label{display:block;margin:.4rem 0}input,select{width:100%}section{border:1px solid #ccc;border-radius:8px;padding:1rem;margin:1rem 0}pre{background:#f4f4f4;padding:.5rem;overflow:auto}</style></head><body><main>
+<h1>Variant rules builder</h1><p>Configure a poker variant.</p>
+<section><h2>Config</h2>
+<label>Players <input id="players" type="number" value="2" min="2" max="6"></label>
+<label>Deck size <input id="deck" type="number" value="52" min="4" max="52"></label>
+<label>Hole cards <input id="hole" type="number" value="2" min="1" max="5"></label>
+<label>Streets <input id="streets" value="preflop,flop,turn,river"></label>
+<label>Betting <select id="betting"><option>limit</option><option>pot-limit</option><option>no-limit</option></select></label>
+<label>Peek rule <select id="peek"><option>none</option><option>sneak-peek</option></select></label>
+<label>Auctions <select id="auction"><option>none</option><option>sealed-bid</option></select></label>
+<button id="build">Build config</button></section>
+<section><h2>Output</h2><pre id="out"></pre></section>
+<script>
+document.getElementById('build').onclick=()=>{const cfg={players:+players.value,deck:+deck.value,hole:+hole.value,streets:streets.value.split(',').map(s=>s.trim()),betting:betting.value,peek:peek.value,auction:auction.value};out.textContent=JSON.stringify(cfg,null,2);localStorage.setItem('variantConfig',JSON.stringify(cfg));};
+</script></main></body></html>
