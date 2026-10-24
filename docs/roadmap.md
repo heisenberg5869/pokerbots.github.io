@@ -13,12 +13,12 @@ Status values: **planned → outline → in progress → draft → reviewed → 
 | 06 | Abstraction & Endgame | in progress | ✅ histogram EMD, k-medoids, action translation | ✅ | ✅ notebook | ✅ synthetic abstraction, translation, safe-solve concept |
 | 07 | Heads-Up No-Limit | in progress | ✅ single-street NL betting round + sizing, ✅ push/fold solver | ✅ | ✅ push/fold notebook | ✅ push/fold explorer + I07.2-I07.9 |
 | 08 | Deep CFR | planned | — | — | — | — |
-| 09 | Value Nets & Search | planned | — | — | — | — |
-| 10 | Pot-Limit Omaha | planned | — | — | — | — |
-| 11 | Multiplayer | planned | — | — | — | — |
-| 12 | Opponent Modelling | planned | — | — | — | — |
-| 13 | Custom Variants | planned | — | — | — | — |
-| 14 | Case Studies | planned | — | — | — | — |
+| 09 | Value Nets & Search | in progress | o. ValueNet, KuhnValueAgent, depth-limited search | o. | - | - |
+| 10 | Pot-Limit Omaha | in progress | o. eval/omaha (evaluate_omaha, equity) | o. | - | - |
+| 11 | Multiplayer | in progress | o. games/multiplayer (round-robin eval) | o. | - | - |
+| 12 | Opponent Modelling | in progress | - | - | - | - |
+| 13 | Custom Variants | in progress | ✅ games/variant (VariantGame, SneakPeekHoldem) | ✅ | - | - |
+| 14 | Case Studies | in progress | — | — | — | — |
 
 ## Phases
 

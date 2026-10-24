@@ -2,7 +2,7 @@
 
 | Level | Prerequisites | Status |
 |---|---|---|
-| Advanced | 07, 08 | planned |
+| Advanced | 07, 08 | in progress |
 
 ## Motivation
 _What the previous module could not do, and why this one exists._

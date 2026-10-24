@@ -2,7 +2,7 @@
 
 | Level | Prerequisites | Status |
 |---|---|---|
-| Research | 07, 09 | planned |
+| Research | 07, 09 | in progress |
 
 ## Motivation
 _What the previous module could not do, and why this one exists._

@@ -2,7 +2,7 @@
 
 | Level | Prerequisites | Status |
 |---|---|---|
-| Research | all earlier | planned |
+| Research | all earlier | in progress |
 
 ## Motivation
 _What the previous module could not do, and why this one exists._
