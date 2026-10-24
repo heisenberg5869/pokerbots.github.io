@@ -46,6 +46,7 @@ nav:
       - 06 Abstraction & Endgame: modules/06_abstraction_endgame.md
       - 06 Abstraction interactive lab: demos/abstraction-module-06.html
       - 07 Heads-Up No-Limit: modules/07_nolimit.md
+      - 07 Push/fold interactive lab: demos/pushfold-module-07.html
   - Neural era:
       - 08 Deep CFR: modules/08_deep_cfr.md
       - 09 Value Nets & Search: modules/09_value_nets_search.md

@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Module 07 · Push/fold Nash explorer</title>
+<style>
+:root{color-scheme:dark;--bg:#101820;--panel:#182630;--line:#314854;--text:#e8f1f3;--muted:#9fb3bb;--green:#72dbb2;--gold:#f6c875;--red:#f08d83}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 15% 0,#203b3c,var(--bg) 55%);font:15px/1.5 system-ui,sans-serif;color:var(--text)}
+main{max-width:1160px;margin:auto;padding:32px 22px 70px}
+h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.08;margin:4px 0 10px}
+h2{font-size:1.35rem;margin:0 0 8px}
+h3{font-size:.95rem;margin:14px 0 7px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.eyebrow{color:var(--green);text-transform:uppercase;letter-spacing:.13em;font-size:.78rem;font-weight:750}
+.lede,.muted{color:var(--muted)}.lede{max-width:800px;font-size:1.05rem}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:22px}
+.card{background:linear-gradient(145deg,#1d303a,#14222b);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 14px 40px #0003}
+.wide{grid-column:1/-1}
+.tag{font-size:.72rem;color:var(--gold);border:1px solid #7a643c;border-radius:20px;padding:3px 9px;float:right}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
+.pill{display:inline-flex;gap:6px;align-items:baseline;border:1px solid var(--line);border-radius:999px;padding:5px 11px;color:var(--muted)}
+.pill b{color:var(--text)}
+button,select,input{font:inherit;color:var(--text);background:#10202a;border:1px solid #45616c;border-radius:9px;padding:8px 11px}
+button{cursor:pointer}button:hover{border-color:var(--green);color:var(--green)}
+button.primary{background:#236653;border-color:#3d9a7a;color:white}
+input[type=range]{padding:0;accent-color:var(--green)}
+.small{font-size:.86rem;color:var(--muted)}
+.metric{font-size:1.55rem;color:var(--green);font-weight:750}
+.callout{border-left:3px solid var(--gold);background:#f6c8750f;border-radius:0 9px 9px 0;padding:9px 12px;margin:12px 0;font-size:.9rem;color:#e6d9bd}
+.grids{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:6px}
+.grid169{display:grid;grid-template-columns:repeat(13,1fr);gap:2px}
+.grid169 span{aspect-ratio:1;display:grid;place-items:center;border-radius:4px;font-size:.6rem;font-weight:650;color:#f2fbf8;background:#0d1922;user-select:none}
+.grid169 span.mixed{outline:1px solid var(--gold);outline-offset:-1px}
+.axis{display:grid;grid-template-columns:repeat(13,1fr);gap:2px;margin-top:4px;font-size:.58rem;color:var(--muted);text-align:center}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.78rem;color:var(--muted);margin-top:8px}
+.swatch{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+#curve{width:100%;height:auto;display:block}
+.mixedlist{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.mixedlist span{border:1px solid var(--line);border-radius:7px;padding:3px 8px;font-size:.8rem;color:var(--muted)}
+.mixedlist b{color:var(--text)}
+.bar{height:12px;background:#0c171e;border-radius:9px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#f08d83,#f6c875,#72dbb2);width:0;transition:width .2s}
+footer{margin-top:26px;color:var(--muted);font-size:.85rem;max-width:820px}
+@media(max-width:780px){.grid,.grids{grid-template-columns:1fr}}
+</style></head><body><main>
+<div class="eyebrow">Pokerbots · Module 07</div>
+<h1>Push/fold Nash explorer</h1>
+<p class="lede">Two 13×13 charts, one for each player, from a real solve of the smallest no-limit game. Drag the stack depth and watch the ranges move in opposite directions. The data is precomputed with the repository's chance-sampled CFR solver; the equity model behind it is a teaching heuristic, not a measured preflop table.</p>
+
+<div class="grid">
+<section class="card wide">
+  <span class="tag">I07.1 · precomputed CFR</span>
+  <h2>Ranges at a chosen depth</h2>
+  <p class="small"><b>Predict first:</b> at ten big blinds, does the small blind shove more or less than half of all starting hands?</p>
+  <div class="row">
+    <label>Stack depth <input id="depth" type="range" min="1" max="20" step="1" value="10" style="width:220px"></label>
+    <b id="depthVal" class="pill">10 bb</b>
+    <label class="pill"><input id="showPct" type="checkbox"> show probabilities</label>
+    <span id="status" class="small">loading…</span>
+  </div>
+  <div class="row">
+    <span class="pill">SB shoves <b id="shovePct">—</b></span>
+    <span class="pill">BB calls <b id="callPct">—</b></span>
+    <span class="pill">SB value <b id="evVal">—</b></span>
+  </div>
+  <p class="small">The SB value is the small blind's expected win per hand in big blinds. It is negative because the small blind acts first: the big blind can fold its worst hands after seeing the shove, so acting first costs value even though both players post the same ante.</p>
+  <div class="grids">
+    <div><h3>Small blind · shove or fold</h3><div id="shoveGrid" class="grid169"></div><div class="axis" id="axis1"></div></div>
+    <div><h3>Big blind · call or fold</h3><div id="callGrid" class="grid169"></div><div class="axis" id="axis2"></div></div>
+  </div>
+  <div class="legend">
+    <span><i class="swatch" style="background:rgba(114,219,178,.12)"></i>never</span>
+    <span><i class="swatch" style="background:rgba(114,219,178,.45)"></i>mixed</span>
+    <span><i class="swatch" style="background:rgba(114,219,178,.9)"></i>always</span>
+    <span><i class="swatch" style="background:transparent;outline:1px solid var(--gold)"></i>outline = mixed</span>
+    <span>rows and columns run A → 2</span>
+  </div>
+  <p class="small">Cells are hand <em>classes</em>, not combos: a suited hand stands for four combos, an offsuit hand for twelve, a pair for six. Percentages above are combo-weighted, so they answer “how often does this player act with a random hand?”.</p>
+</section>
+
+<section class="card">
+  <span class="tag">I07.1 · precomputed sweep</span>
+  <h2>Ranges across stack depth</h2>
+  <p class="small">Combo-weighted share of hands each player acts with, solved at every depth from one to twenty big blinds.</p>
+  <svg id="curve" viewBox="0 0 360 200" role="img" aria-label="Shove and call frequency against stack depth"></svg>
+  <div class="legend">
+    <span><i class="swatch" style="background:var(--green)"></i>SB shoves</span>
+    <span><i class="swatch" style="background:var(--gold)"></i>BB calls</span>
+    <span><i class="swatch" style="background:#7f95a0"></i>selected depth</span>
+  </div>
+  <p class="callout">The two curves converge at one big blind, where almost every hand is worth a shove and almost every hand is worth a call. They separate quickly: by twenty big blinds the shover keeps just under half of its hands and the caller about a third.</p>
+</section>
+
+<section class="card">
+  <span class="tag">analytic</span>
+  <h2>Why the caller tightens</h2>
+  <p class="small">The big blind must call the shove to win the pot. Its break-even equity is the call divided by the pot after calling.</p>
+  <div class="row">
+    <span class="pill">Pot before call <b id="potBefore">—</b></span>
+    <span class="pill">Call <b id="callAmt">—</b></span>
+    <span class="pill">Break-even equity <b id="reqEq">—</b></span>
+  </div>
+  <div class="bar"><i id="eqBar"></i></div>
+  <p id="callNote" class="small"></p>
+  <p class="callout">As the stack grows, the call gets larger relative to the pot, so the caller needs more equity and calls fewer hands. The shover responds by folding more, until the two ranges meet at indifference. At one big blind the break-even equity is 25%; at twenty it is 48.8%.</p>
+</section>
+
+<section class="card">
+  <span class="tag">mixing</span>
+  <h2>Hands on the boundary</h2>
+  <p class="small">Equilibrium play is often mixed: the same hand shoves some of the time and folds the rest. These are the small blind's mixed hands at the selected depth.</p>
+  <div id="mixedList" class="mixedlist"></div>
+  <p id="mixedNote" class="small"></p>
+  <p class="callout">A mixed hand sits at the edge of the range: its two actions are close in value, so small changes in the model can flip it. That is why published charts differ in the margins.</p>
+</section>
+
+<section class="card">
+  <span class="tag">caveats</span>
+  <h2>What these charts assume</h2>
+  <ul class="small" style="margin:8px 0 0 18px;padding:0">
+    <li>Both players post one ante, half a big blind each. There are no blinds, so the only asymmetry is acting order, and acting first is a disadvantage.</li>
+    <li>Each deal draws the two hand classes independently, ignoring card removal, so <code>AA</code> against <code>AA</code> is possible.</li>
+    <li>Showdown equity comes from a strength heuristic, not a measured table. Real equities compress the extremes, which tightens both ranges.</li>
+    <li>Every depth is solved for 200,000 chance-sampled iterations at a fixed seed. Hands near a boundary can move a few points under a different seed.</li>
+  </ul>
+  <p class="callout">Load a real preflop equity table through <code>load_equity_table</code> and the same solver produces charts comparable with published push/fold ranges.</p>
+</section>
+</div>
+
+<footer>Data: <code>tools/build_pushfold_lab_data.py</code>, 200,000 chance-sampled CFR iterations per depth with a fixed seed. The game posts one ante per player, ignores card removal between the players, and uses a strength-based equity heuristic, so these ranges are wider than published push/fold charts. Treat the shape as the lesson and the boundary hands as approximate.</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id), RANKS='23456789TJQKA', DECK=13;
+let DATA=null, DEPTH=10, SHOW_PCT=false;
+
+fetch("pushfold-module-07-data.json")
+  .then(r=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json()})
+  .then(d=>{DATA=d;init()})
+  .catch(e=>{$("status").textContent="Data failed to load ("+e.message+"). Open this page through the published site, not as a local file."});
+
+function classNames(){
+  const names=[];
+  for(let i=DECK-1;i>=0;i--)for(let j=DECK-1;j>=0;j--){
+    const a=RANKS[i], b=RANKS[j];
+    names.push(i===j?a+a:(i>j?a+b+"s":b+a+"o"));
+  }
+  return names;
+}
+const GRID=classNames();
+let IDX={};
+
+function init(){
+  $("status").textContent="";
+  DATA.manifest.class_order.forEach((name,i)=>{IDX[name]=i});
+  $("axis1").innerHTML=$("axis2").innerHTML=RANKS.split("").reverse().map(r=>`<span>${r}</span>`).join("");
+  $("depth").addEventListener("input",e=>{DEPTH=+e.target.value;paint()});
+  $("showPct").addEventListener("change",e=>{SHOW_PCT=e.target.checked;paint()});
+  paint();
+}
+
+function pct(p){return (p*100).toFixed(0)+"%";}
+
+function cellStyle(p){
+  const a=(0.06+0.82*p).toFixed(3);
+  return `background:rgba(114,219,178,${a})`;
+}
+
+function fillGrid(el,values){
+  el.innerHTML=GRID.map(name=>{
+    const k=IDX[name], p=values[k], mixed=p>0.05&&p<0.95;
+    const label=SHOW_PCT?pct(p):name;
+    const title=`${name}: ${(p*100).toFixed(1)}%`;
+    return `<span class="${mixed?"mixed":""}" style="${cellStyle(p)}" title="${title}">${label}</span>`;
+  }).join("");
+}
+
+function combosWeighted(values){
+  const combos=DATA.manifest.combos;
+  let num=0, den=0;
+  for(let i=0;i<values.length;i++){num+=combos[i]*values[i];den+=combos[i];}
+  return num/den;
+}
+
+function paint(){
+  if(!DATA)return;
+  const row=DATA.depths[String(DEPTH)];
+  $("depthVal").textContent=DEPTH+" bb";
+  fillGrid($("shoveGrid"),row.shove);
+  fillGrid($("callGrid"),row.call);
+  $("shovePct").textContent=pct(combosWeighted(row.shove));
+  $("callPct").textContent=pct(combosWeighted(row.call));
+  $("evVal").textContent=row.ev_bb.toFixed(3)+" bb";
+  paintCurve(DEPTH);
+  paintCalling();
+  paintMixed(row.shove);
+}
+
+function paintCalling(){
+  const potBefore=1+(DEPTH-0.5), call=DEPTH-0.5, total=potBefore+call;
+  const req=call/total;
+  $("potBefore").textContent=potBefore.toFixed(1)+" bb";
+  $("callAmt").textContent=call.toFixed(1)+" bb";
+  $("reqEq").textContent=(req*100).toFixed(1)+"%";
+  $("eqBar").style.width=(req*100)+"%";
+  $("callNote").textContent=`The small blind has already posted half a blind and shoves its remaining ${call.toFixed(1)} bb into a pot of ${potBefore.toFixed(1)} bb. Calling risks ${call.toFixed(1)} bb to win ${total.toFixed(1)} bb, so the big blind needs ${(req*100).toFixed(1)}% showdown equity to break even.`;
+}
+
+function paintMixed(values){
+  const names=DATA.manifest.class_order;
+  const mixed=[];
+  for(let i=0;i<values.length;i++)if(values[i]>0.1&&values[i]<0.9)mixed.push([names[i],values[i]]);
+  mixed.sort((a,b)=>b[1]-a[1]);
+  $("mixedList").innerHTML=mixed.slice(0,16).map(([n,p])=>`<span><b>${n}</b> ${pct(p)}</span>`).join("");
+  $("mixedNote").textContent=mixed.length
+    ? `${mixed.length} mixed ${mixed.length===1?"hand":"hands"} at ${DEPTH} bb${mixed.length>16?" (showing the 16 closest to pure shoves)":""}.`
+    : `No mixed hands at ${DEPTH} bb: every hand is a near-pure shove or fold.`;
+}
+
+function paintCurve(selected){
+  const depths=DATA.manifest.depths_bb, W=360, H=200, L=30, R=8, T=10, B=36;
+  const x=d=>L+(d-depths[0])/(depths[depths.length-1]-depths[0])*(W-L-R);
+  const y=p=>T+(1-p)*(H-T-B);
+  const shove=depths.map(d=>combosWeighted(DATA.depths[String(d)].shove));
+  const call=depths.map(d=>combosWeighted(DATA.depths[String(d)].call));
+  const line=pts=>pts.map((p,i)=>`${i?"L":"M"}${x(depths[i]).toFixed(1)},${y(p).toFixed(1)}`).join(" ");
+  const grid=[0,.25,.5,.75,1].map(p=>`<line x1="${L}" y1="${y(p)}" x2="${W-R}" y2="${y(p)}" stroke="#314854" stroke-width=".7"/>
+    <text x="${L-5}" y="${y(p)+3}" fill="#9fb3bb" font-size="8" text-anchor="end">${p*100}%</text>`).join("");
+  const ticks=[1,5,10,15,20].map(d=>`<text x="${x(d)}" y="${H-14}" fill="#9fb3bb" font-size="8" text-anchor="middle">${d}</text>`).join("");
+  const marker=`<line x1="${x(selected)}" y1="${T}" x2="${x(selected)}" y2="${H-B}" stroke="#7f95a0" stroke-width="1" stroke-dasharray="3 3"/>`;
+  $("curve").innerHTML=`${grid}${ticks}${marker}
+    <path d="${line(call)}" fill="none" stroke="#f6c875" stroke-width="2"/>
+    <path d="${line(shove)}" fill="none" stroke="#72dbb2" stroke-width="2"/>
+    <text x="${(L+W-R)/2}" y="${H-2}" fill="#9fb3bb" font-size="8" text-anchor="middle">stack depth, big blinds</text>`;
+}
+</script></body></html>

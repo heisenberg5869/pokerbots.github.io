@@ -2,8 +2,23 @@
 
 Read the explanation: [`docs/modules/07_nolimit.md`](../../docs/modules/07_nolimit.md)
 
+Open the interactive lab: [`docs/demos/pushfold-module-07.html`](../../docs/demos/pushfold-module-07.html)
+
 Hands-on material (notebooks, exercises) goes in this folder. `exercises/` is
 still empty; the solver itself lives in the library.
+
+## Push/fold explorer lab
+
+The lab shows both 13×13 charts, a stack-depth slider from 1 to 20 big blinds,
+the combo-weighted frequencies, the solved value, and the break-even equity
+behind the caller's boundary. Its data is rebuilt with:
+
+```bash
+python tools/build_pushfold_lab_data.py
+```
+
+`tests/test_pushfold_demo_data.py` re-solves one depth from the recorded seed
+and iteration count, so the static JSON cannot silently drift from the solver.
 
 ## Push/fold solver
 
