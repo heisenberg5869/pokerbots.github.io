@@ -11,7 +11,7 @@ Status values: **planned → outline → in progress → draft → reviewed → 
 | 04 | Expanded Leduc + MCCFR | in progress | ✅ chance / external MCCFR, sampled estimators, 5-/7-card evaluator | ✅ | ✅ executed notebook | ✅ sampling, variance, scale, bluff labs; river P0 pending |
 | 05 | Limit Hold'em | in progress | ✅ evaluator, range equity, betting-round mechanics | ✅ | ✅ notebook | ✅ six P0 lab concepts; solver data and full game pending |
 | 06 | Abstraction & Endgame | in progress | ✅ histogram EMD, k-medoids, action translation | ✅ | ✅ notebook | ✅ synthetic abstraction, translation, safe-solve concept |
-| 07 | Heads-Up No-Limit | in progress | ✅ single-street NL betting round + sizing, ✅ push/fold solver | ✅ | — | ✅ push/fold explorer |
+| 07 | Heads-Up No-Limit | in progress | ✅ single-street NL betting round + sizing, ✅ push/fold solver | ✅ | ✅ push/fold notebook | ✅ push/fold explorer |
 | 08 | Deep CFR | planned | — | — | — | — |
 | 09 | Value Nets & Search | planned | — | — | — | — |
 | 10 | Pot-Limit Omaha | planned | — | — | — | — |
