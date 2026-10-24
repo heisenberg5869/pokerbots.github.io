@@ -2,7 +2,7 @@
 
 | Level | Prerequisites | Status |
 |---|---|---|
-| Advanced | 02, 04 | planned |
+| Advanced | 02, 04 | draft |
 
 ## Motivation
 _What the previous module could not do, and why this one exists._
@@ -20,7 +20,7 @@ _TODO: a tiny worked example and a picture before any formulas._
 _TODO: use the notation in [Notation](../notation.md)._
 
 ## Algorithm
-_TODO: pseudocode, then a minimal implementation._
+Implementation: `pokerbot/nn/` (AdvantageNet, StrategyNet, features, reservoir) and `pokerbot/solvers/deep_cfr.py` (DeepCFRTrainer), plus `single_deep_cfr.py`. Run `python -m pokerbot.solvers.deep_cfr`.
 
 ## Interactive lab
 _TODO: notebook in `modules/08_deep_cfr/` and/or a browser demo._
