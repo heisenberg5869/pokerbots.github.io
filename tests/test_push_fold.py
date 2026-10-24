@@ -149,7 +149,26 @@ def test_junk_hand_folds_deep():
     assert not shove_at(stack_bb=40, hand_class="72o", iterations=60_000)
 
 
-def test_reproducible_with_seed():
+def test_exploitability_is_reported_and_small(solved_10bb):
+    assert solved_10bb.exploitability is not None
+    assert solved_10bb.exploitability >= 0.0
+    assert solved_10bb.exploitability < 0.05
+
+
+def test_exploitability_falls_with_iterations():
+    low = solve_push_fold(stack=20, ante=1, iterations=10_000, seed=0)
+    high = solve_push_fold(stack=20, ante=1, iterations=200_000, seed=0)
+    assert high.exploitability < low.exploitability
+
+
+def test_to_strategy_round_trips_through_exploitability(solved_10bb):
+    from pokerbot.eval.exploitability import expected_value
+
+    game = PushFoldGame(stack=solved_10bb.stack, ante=solved_10bb.ante,
+                        equity=solved_10bb.equity)
+    ev = expected_value(game, solved_10bb.to_strategy(), 0)
+    assert isinstance(ev, float)
+    assert ev < 0.0          # small blind acts first, so its value is negative
     a = solve_push_fold(stack=20, ante=1, iterations=5_000, seed=42)
     b = solve_push_fold(stack=20, ante=1, iterations=5_000, seed=42)
     assert a.shove_threshold == b.shove_threshold

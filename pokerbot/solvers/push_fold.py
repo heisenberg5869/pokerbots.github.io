@@ -385,6 +385,25 @@ class PushFoldResult:
     iterations: int
     shove_threshold: dict[int, float]   # class -> SB shove probability
     call_threshold: dict[int, float]    # class -> BB call probability
+    equity: EquityFn = default_equity
+
+    @property
+    def exploitability(self) -> float:
+        """Exact exploitability of the average strategy, in units of ``ante``."""
+        from pokerbot.eval.exploitability import exploitability as _exploitability
+        game = PushFoldGame(stack=self.stack, ante=self.ante, equity=self.equity)
+        strategy = self.to_strategy()
+        return _exploitability(game, strategy)
+
+    def to_strategy(self) -> dict[str, list[float]]:
+        """Convert the average strategy into the dict form used by
+        :mod:`pokerbot.eval.exploitability`."""
+        strategy: dict[str, list[float]] = {}
+        for i, p in self.shove_threshold.items():
+            strategy[f"SB:{i}"] = [1.0 - p, p]
+        for j, p in self.call_threshold.items():
+            strategy[f"BB:{j}:shoved"] = [1.0 - p, p]
+        return strategy
 
     @property
     def shove_range(self) -> list[int]:
@@ -524,10 +543,9 @@ def solve_push_fold(*, stack: int = 10, ante: int = 1,
     Returns
     -------
     PushFoldResult
-        The average strategy and the derived shove/call ranges. Exploitability
-        is not reported: exact best-response evaluation over the full 169 x 169
-        deal tree is far slower than the sampled solve and is left to
-        :mod:`pokerbot.eval.exploitability` when needed.
+        The average strategy, the derived shove/call ranges, and the exact
+        exploitability of that profile (computed by best response over the full
+        deal tree). Exploitability is returned in units of ``ante``.
     """
     shove_threshold, call_threshold = _solve_mccfr(
         stack, ante, equity, iterations, seed)
@@ -537,6 +555,7 @@ def solve_push_fold(*, stack: int = 10, ante: int = 1,
         iterations=iterations,
         shove_threshold=shove_threshold,
         call_threshold=call_threshold,
+        equity=equity,
     )
 
 
