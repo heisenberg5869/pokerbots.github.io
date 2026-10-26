@@ -196,7 +196,7 @@ switch to **self-play** and watch the thick (average) lines converge while the t
 The lab now includes positive regret bars, a current-versus-average simplex trajectory, an RM/RM+ opponent-switch
 experiment, a speed control, and a small diagram that computes one counterfactual regret update.
 
-<iframe src="../../demos/regret_matching_rps.html" width="100%" height="470" style="border:1px solid #8884;border-radius:6px"></iframe>
+<iframe src="../../demos/regret_matching_rps.html" width="100%" height="1250" style="border:1px solid #8884;border-radius:14px" title="Regret matching interactive lab" loading="lazy"></iframe>
 
 **Notebook:** [`modules/02_regret_matching/notebook.ipynb`](https://github.com/heisenberg5869/pokerbots.github.io/blob/main/modules/02_regret_matching/notebook.ipynb) lets you
 
