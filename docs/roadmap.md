@@ -1,6 +1,6 @@
 # Roadmap
 
-Status values: **planned → outline → in progress → draft → reviewed → done**
+Track the lessons and library work below or [browse the available labs](labs.md).
 
 | # | Module | Status | Library code | Tests | Notebook | Web demo |
 |---|---|---|---|---|---|---|
@@ -11,23 +11,23 @@ Status values: **planned → outline → in progress → draft → reviewed → 
 | 04 | Expanded Leduc + MCCFR | in progress | ✅ chance / external MCCFR, sampled estimators, 5-/7-card evaluator | ✅ | ✅ executed notebook | ✅ sampling, variance, scale, bluff labs; river P0 pending |
 | 05 | Limit Hold'em | in progress | ✅ evaluator, range equity, betting-round mechanics | ✅ | ✅ notebook | ✅ six P0 lab concepts; solver data and full game pending |
 | 06 | Abstraction & Endgame | in progress | ✅ histogram EMD, k-medoids, action translation | ✅ | ✅ notebook | ✅ synthetic abstraction, translation, safe-solve concept |
-| 07 | Heads-Up No-Limit | in progress | ✅ single-street NL betting round + sizing, ✅ push/fold solver | ✅ | ✅ push/fold notebook | ✅ push/fold explorer + I07.2-I07.9 |
-| 08 | Deep CFR | planned | — | — | — | — |
-| 09 | Value Nets & Search | in progress | o. ValueNet, KuhnValueAgent, depth-limited search | o. | - | - |
-| 10 | Pot-Limit Omaha | in progress | o. eval/omaha (evaluate_omaha, equity) | o. | - | - |
-| 11 | Multiplayer | in progress | o. games/multiplayer (round-robin eval) | o. | - | - |
-| 12 | Opponent Modelling | in progress | - | - | - | - |
-| 13 | Custom Variants | in progress | ✅ games/variant (VariantGame, SneakPeekHoldem) | ✅ | - | - |
-| 14 | Case Studies | in progress | — | — | — | — |
+| 07 | Heads-Up No-Limit | in progress | No-limit betting, push/fold, match evaluation, local best response | ✅ | ✅ push/fold notebook | Push/fold explorer |
+| 08 | Deep CFR | draft | Deep CFR and Single Deep CFR trainers, networks, reservoirs | ✅ | — | Training, reservoirs, strategy comparison |
+| 09 | Value Nets & Search | in progress | Value networks and depth-limited search | ✅ | — | Belief states, search tree, value network |
+| 10 | Pot-Limit Omaha | in progress | Omaha hand evaluation and equity | ✅ | — | Hand builder, combinations, equity, failure cases |
+| 11 | Multiplayer | in progress | Multiplayer game and round-robin evaluation | ✅ | — | Payoffs, game trees, population arena |
+| 12 | Opponent Modelling | in progress | Frequency models and safe exploitation | ✅ | — | Profiles, Bayesian updates, exploitability and profit |
+| 13 | Custom Variants | in progress | Variant framework and Sneak Peek Hold’em | ✅ | — | Rules builder, variant card, tree estimator |
+| 14 | Case Studies | in progress | — | — | ✅ | Solved ladder, technique selector, compute comparison |
 
 ## Phases
 
 - **Phase 0: skeleton** ✅ repo layout, notation, CI, docs site, module template, exact exploitability
 - **Phase 1: prove the template.** Module 00 is drafted with its P0 browser labs; Module 01 and 02 have P0 labs. Shared-widget extraction and independent learner review remain.
 - **Phase 2: small solvable games.** Leduc's core labs are present; expanded Leduc, the river solver, and remaining MCCFR P0 work are in progress.
-- **Phase 3: real poker.** Hand evaluation, range equity, a single-round Limit betting engine, and six P0 lab concepts are started; the four-street Limit game, trained abstracted strategy, abstraction, endgame solving, and the remaining heads-up No-Limit deliverables (re-solver, match harness, flop library) remain.
-- **Phase 4: neural and frontier.** Deep CFR, value nets, PLO, multiplayer, opponent modelling
-- **Phase 5: capstone.** variant framework, Sneak Peek Hold'em, case studies
+- **Phase 3 (Hold’em and abstraction).** See the [Module 07 implementation plan](modules/07_nolimit_plan.md) for remaining no-limit solver and browser work.
+- **Phase 4 (Neural solvers and the research frontier).** Modules 08–12 have lessons, library code, and browser labs. The [Deep CFR implementation plan](modules/08_deep_cfr_plan.md) tracks the original milestones.
+- **Phase 5 (Capstone).** The variant framework, Sneak Peek Hold’em, and case studies have lessons and labs.
 
 ## Library plan
 

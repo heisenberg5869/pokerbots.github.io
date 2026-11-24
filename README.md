@@ -7,7 +7,7 @@ This repo is a hands-on curriculum *and* a working code library. Every module ex
 motivates the next. By the end you will have built solvers for Kuhn, Leduc, Limit, No-Limit, Omaha, multiplayer
 games and your own custom variants.
 
-> **Status:** early. Modules 00–06 have solver material, lessons, notebooks and browser labs; Module 07 now has a push/fold solver, single-street no-limit betting mechanics, and a push/fold explorer lab. Its larger deliverables — continual re-solving, the match harness, and the flop library — are still in progress. Per-module detail is in [`docs/roadmap.md`](docs/roadmap.md).
+Open the [course website](https://heisenberg5869.github.io/pokerbots.github.io/) to read the lessons or try the [browser labs](https://heisenberg5869.github.io/pokerbots.github.io/labs/). The [roadmap](docs/roadmap.md) tracks lesson, solver, notebook, and lab status for each module.
 
 ## The path
 
@@ -35,21 +35,26 @@ games and your own custom variants.
 git clone https://github.com/heisenberg5869/pokerbots.github.io.git
 cd pokerbots.github.io
 pip install -e ".[dev]"
-pytest                          # verifies the Kuhn solver against the known Nash equilibrium
+python -m pytest               # runs the solver and library tests
 python -m pokerbot.solvers.cfr  # trains CFR on Kuhn and prints strategy + exploitability
 ```
 
-Docs site (local): `pip install -e ".[docs]" && mkdocs serve`
+Run the documentation site locally:
+
+```bash
+python -m pip install -e ".[docs]"
+python -m mkdocs serve
+```
 
 ## Layout
 
 ```
-docs/          prose for every module, notation, glossary, roadmap, interactive demos (MkDocs site)
-modules/       hands-on material per module: notebooks and exercises
-pokerbot/      the shared library: games/, solvers/, eval/, abstraction/, viz/
-tests/         correctness tests (known equilibria, cross-checks)
-benchmarks/    convergence and speed experiments
-papers/        reading list per module
+docs/          MkDocs lessons, references, site assets, and interactive labs
+modules/       notebooks and other hands-on material
+pokerbot/      Python games, solvers, evaluation, abstraction, and neural networks
+tests/         solver, game, and demo-data tests
+tools/         scripts that generate datasets for the browser labs
+planning/      implementation checklists and historical site plans
 ```
 
 ## How every module is structured

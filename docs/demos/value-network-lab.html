@@ -17,7 +17,13 @@ button.primary{background:#236653;border-color:#3d9a7a;color:white}
 .callout{border-left:3px solid var(--gold);background:#f6c8750f;border-radius:0 9px 9px 0;padding:9px 12px;margin:12px 0;font-size:.9rem;color:#e6d9bd}
 .bar{height:14px;background:#0c171e;border-radius:9px;overflow:hidden;margin:6px 0}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,#f08d83,#f6c875,#72dbb2);transition:width .2s}
-</style></head><body><main>
+</style><link rel="stylesheet" href="assets/lab-navigation.css"></head><body>
+<nav class="lab-nav" aria-label="Lab navigation">
+  <a class="lab-nav__brand" href="../">pokerbots</a>
+  <a href="../labs/">All labs</a>
+  <a href="../modules/09_value_nets_search/">Read the lesson</a>
+</nav>
+<main>
 <div style="color:var(--green);text-transform:uppercase;letter-spacing:.13em;font-size:.78rem;font-weight:750">Pokerbots · Module 09</div>
 <h1>Value Network Lab</h1>
 <p class="small">Train a tiny value net by gradient descent on leaf targets; watch MSE drop.</p>

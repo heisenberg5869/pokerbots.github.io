@@ -1,4 +1,10 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PLO hand builder</title><style>body{font:15px system-ui,sans-serif;background:#101820;color:#e8f1f3;margin:0;padding:20px}main{max-width:900px;margin:auto}button{padding:6px 10px;margin:4px}.card{display:inline-block;padding:6px 10px;margin:2px;border:1px solid #45616c;border-radius:6px;cursor:pointer}.sel{background:#236653}.out{margin-top:12px;padding:10px;border:1px solid #314854;border-radius:8px}</style></head><body><main><h1>PLO hand builder</h1><p>Select 4 hole cards and 5 board cards, then enumerate legal 5-card hands (2 hole + 3 board).</p><div id="deck"></div><button onclick="reset()">Reset</button><div class="out" id="info">Selected: 0</div><div class="out" id="combos"></div><script>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PLO hand builder</title><style>body{font:15px system-ui,sans-serif;background:#101820;color:#e8f1f3;margin:0;padding:20px}main{max-width:900px;margin:auto}button{padding:6px 10px;margin:4px}.card{display:inline-block;padding:6px 10px;margin:2px;border:1px solid #45616c;border-radius:6px;cursor:pointer}.sel{background:#236653}.out{margin-top:12px;padding:10px;border:1px solid #314854;border-radius:8px}</style><link rel="stylesheet" href="assets/lab-navigation.css"></head><body>
+<nav class="lab-nav" aria-label="Lab navigation">
+  <a class="lab-nav__brand" href="../">pokerbots</a>
+  <a href="../labs/">All labs</a>
+  <a href="../modules/10_plo/">Read the lesson</a>
+</nav>
+<main><h1>PLO hand builder</h1><p>Select 4 hole cards and 5 board cards, then enumerate legal 5-card hands (2 hole + 3 board).</p><div id="deck"></div><button onclick="reset()">Reset</button><div class="out" id="info">Selected: 0</div><div class="out" id="combos"></div><script>
 const ranks='23456789TJQKA', suits=['♠','♥','♦','♣'];function name(c){return ranks[c%13]+suits[Math.floor(c/13)]}
 let selected=[];const deckEl=document.getElementById('deck');
 for(let i=0;i<52;i++){const b=document.createElement('button');b.className='card';b.textContent=name(i);b.onclick=()=>toggle(i,b);deckEl.appendChild(b)}

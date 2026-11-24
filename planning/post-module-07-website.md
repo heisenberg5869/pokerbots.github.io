@@ -1,5 +1,7 @@
 # Post-Module-07 Website Development Plan
 
+This plan records the site audit before the Module 08–14 labs were added. See the [lab directory](../docs/labs.md) for what is available today.
+
 ## Purpose
 
 The curriculum plan is broad, but the website currently stops being interactive after Module 07. Modules 08–14 mostly render as text pages with TODO placeholders and no browser labs.

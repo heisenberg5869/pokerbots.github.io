@@ -1,26 +1,97 @@
-# pokerbots
+---
+title: Home
+hide:
+  - navigation
+  - toc
+---
 
-**Learn to solve poker, one concept at a time: from a 3-card toy game to games that are still open research problems.**
+<div class="course-home" markdown="1">
 
-Every module explains one idea from scratch (intuition, math, code, interactive demo, verification, and "where does this break?"). The failure at the end of each module motivates the next.
+<section class="course-hero" id="start-here" aria-labelledby="learn-to-solve-poker" markdown="1">
+<div class="course-hero__copy" markdown="1">
 
-## Start here
+<p class="course-kicker">An open-source poker curriculum</p>
 
-1. [00 Prerequisites](modules/00_prereqs.md): the game theory you need
-2. [01 Kuhn Poker](modules/01_kuhn.md): your first solved game (working code + tests)
-3. [02 Regret Matching](modules/02_regret_matching.md): why CFR works (with an interactive demo)
-4. [03 Leduc Hold'em](modules/03_leduc.md): chance events, public cards, beliefs and CFR variants
+# Learn to solve poker.
 
-See the [Roadmap](roadmap.md) for status of every module, [Notation](notation.md) for symbols, and the [Glossary](glossary.md) for terms.
+Build poker solvers from first principles. Start with a three-card game, then work up to Hold’em, neural search, and open research problems.
+{: .course-lede }
 
-The complete [curriculum master plan](plan.md) tracks the learning design, interactive labs, verification anchors, and delivery phases.
+[Start Module 00 →](modules/00_prereqs.md){ .course-button .course-button--primary }
+[Explore the labs](labs.md){ .course-button }
+{: .course-actions }
 
-## The three levels of "solved"
+</div>
 
-| Level | Meaning | Example |
-|---|---|---|
-| Solved | exact equilibrium known or provably near-exact | Kuhn, Leduc, heads-up limit Hold'em (Cepheus) |
-| Practically strong | beats top humans via abstraction + search, no equilibrium guarantee | heads-up no-limit (Libratus, DeepStack), 6-player (Pluribus) |
-| Open | no guarantees, or exploitability cannot even be measured | multiplayer equilibrium, full-scale PLO, novel variants |
+![The jack of spades, queen of diamonds, and king of clubs on a green felt decision tree](assets/kuhn-poker.webp){ width="1200" height="900" .course-hero__image }
 
-Each module says which level its game sits at and why.
+</section>
+
+<section class="course-section" id="curriculum" aria-labelledby="the-curriculum" markdown="1">
+
+## The curriculum
+
+Fifteen modules with worked examples, Python code, and interactive experiments.
+
+<ul class="course-grid" markdown="block">
+<li class="course-card" markdown="block">
+<p class="course-kicker">Modules 00–02</p>
+
+### [Foundations](modules/00_prereqs.md)
+
+Learn expected value and regret matching, then solve your first game with Kuhn poker.
+</li>
+<li class="course-card" markdown="block">
+<p class="course-kicker">Modules 03–04</p>
+
+### [Small solvable games](modules/03_leduc.md)
+
+Add public cards and chance events with Leduc, then scale CFR with sampling.
+</li>
+<li class="course-card" markdown="block">
+<p class="course-kicker">Modules 05–07</p>
+
+### [Hold’em and abstraction](modules/05_limit_holdem.md)
+
+Work with ranges, simplify game trees, and explore heads-up no-limit push/fold strategy.
+</li>
+<li class="course-card" markdown="block">
+<p class="course-kicker">Modules 08–09</p>
+
+### [Neural solvers](modules/08_deep_cfr.md)
+
+Approximate regrets with Deep CFR and combine learned values with depth-limited search.
+</li>
+<li class="course-card" markdown="block">
+<p class="course-kicker">Modules 10–12</p>
+
+### [The research frontier](modules/10_plo.md)
+
+Explore Pot-Limit Omaha, multiplayer games, and the tradeoffs of exploiting an opponent.
+</li>
+<li class="course-card" markdown="block">
+<p class="course-kicker">Modules 13–14</p>
+
+### [Custom games and case studies](modules/13_variants.md)
+
+Model a new poker variant and compare the techniques used by landmark poker bots.
+</li>
+</ul>
+
+[See the full roadmap →](roadmap.md){ .course-text-link }
+
+</section>
+
+<section class="course-section course-solving" aria-labelledby="the-three-levels-of-solved" markdown="1">
+
+## What does “solved” mean? { #the-three-levels-of-solved }
+
+| Level | What we know | Examples |
+| --- | --- | --- |
+| **Solved** | An exact equilibrium is known or a strategy is provably near equilibrium. | Kuhn poker, Leduc, heads-up limit Hold’em (Cepheus) |
+| **Practically strong** | The strategy beats top humans. An equilibrium guarantee remains open. | Heads-up no-limit (DeepStack, Libratus), six-player no-limit (Pluribus) |
+| **Open** | Equilibria or exploitability are hard to compute. | Multiplayer equilibrium, full-scale Pot-Limit Omaha, novel variants |
+
+</section>
+
+</div>

@@ -40,7 +40,13 @@ input[type=range]{padding:0;accent-color:var(--green)}
 .bar i{display:block;height:100%;background:linear-gradient(90deg,#f08d83,#f6c875,#72dbb2);width:0;transition:width .2s}
 footer{margin-top:26px;color:var(--muted);font-size:.85rem;max-width:820px}
 @media(max-width:780px){.grid,.grids{grid-template-columns:1fr}}
-</style></head><body><main>
+</style><link rel="stylesheet" href="assets/lab-navigation.css"></head><body>
+<nav class="lab-nav" aria-label="Lab navigation">
+  <a class="lab-nav__brand" href="../">pokerbots</a>
+  <a href="../labs/">All labs</a>
+  <a href="../modules/07_nolimit/">Read the lesson</a>
+</nav>
+<main>
 <div class="eyebrow">Pokerbots · Module 07</div>
 <h1>Push/fold Nash explorer</h1>
 <p class="lede">Two 13×13 charts, one for each player, from a real solve of the smallest no-limit game. Drag the stack depth and watch the ranges move in opposite directions. The data is precomputed with the repository's chance-sampled CFR solver; the equity model behind it is a teaching heuristic, not a measured preflop table.</p>

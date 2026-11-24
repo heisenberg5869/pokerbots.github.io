@@ -2,80 +2,76 @@ site_name: pokerbots
 site_description: Learn to solve poker, from Kuhn to custom variants
 site_url: https://heisenberg5869.github.io/pokerbots.github.io/
 repo_url: https://github.com/heisenberg5869/pokerbots.github.io
+repo_name: Source on GitHub
 theme:
   name: material
-  features: [navigation.sections, navigation.top, content.code.copy, toc.follow]
+  custom_dir: overrides
+  font: false
+  icon:
+    logo: material/cards-playing-outline
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - content.code.copy
+    - toc.follow
   palette:
-    - scheme: default
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
       toggle: { icon: material/weather-night, name: Dark mode }
-    - scheme: slate
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
       toggle: { icon: material/weather-sunny, name: Light mode }
 markdown_extensions:
   - admonition
+  - attr_list
+  - md_in_html
   - tables
   - toc: { permalink: true }
   - pymdownx.arithmatex: { generic: true }
   - pymdownx.superfences
   - pymdownx.details
   - pymdownx.tabbed: { alternate_style: true }
+extra:
+  generator: false
+extra_css:
+  - assets/site.css
 extra_javascript:
   - javascripts/mathjax.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 nav:
   - Home: index.md
-  - Roadmap: roadmap.md
+  - Curriculum:
+      - Roadmap: roadmap.md
+      - Foundations:
+          - 00 Prerequisites: modules/00_prereqs.md
+          - 01 Kuhn Poker: modules/01_kuhn.md
+          - 02 Regret Matching: modules/02_regret_matching.md
+      - Small solvable games:
+          - 03 Leduc Hold'em: modules/03_leduc.md
+          - 04 Monte Carlo CFR: modules/04_mccfr.md
+      - Hold’em and abstraction:
+          - 05 Limit Hold'em: modules/05_limit_holdem.md
+          - 06 Abstraction & Endgame: modules/06_abstraction_endgame.md
+          - 07 Heads-Up No-Limit: modules/07_nolimit.md
+      - Neural solvers:
+          - 08 Deep CFR: modules/08_deep_cfr.md
+          - 09 Value Networks & Search: modules/09_value_nets_search.md
+      - The research frontier:
+          - 10 Pot-Limit Omaha: modules/10_plo.md
+          - 11 Multiplayer: modules/11_multiplayer.md
+          - 12 Opponent Modelling: modules/12_opponent_modelling.md
+      - Custom games and case studies:
+          - 13 Custom Variants: modules/13_variants.md
+          - 14 Case Studies: modules/14_case_studies.md
+  - Labs: labs.md
   - Reference:
       - Notation: notation.md
       - Glossary: glossary.md
       - Curriculum master plan: plan.md
-  - Foundations:
-      - 00 Prerequisites: modules/00_prereqs.md
-      - 00 Foundations lab: demos/foundations-module-00.html
-      - 01 Kuhn Poker: modules/01_kuhn.md
-      - 01 Kuhn interactive lab: demos/kuhn-module-01.html
-      - 02 Regret Matching: modules/02_regret_matching.md
-      - 02 Regret Matching interactive lab: demos/regret_matching_rps.html
-  - Small solvable games:
-      - 03 Leduc Hold'em: modules/03_leduc.md
-      - 03 Leduc interactive lab: demos/leduc-module-03.html
-      - 04 Expanded Leduc + MCCFR: modules/04_mccfr.md
-      - 04 Sampling interactive lab: demos/mccfr-module-04.html
-  - Real poker:
-      - 05 Limit Hold'em: modules/05_limit_holdem.md
-      - 05 Limit Hold'em interactive labs: demos/limit-module-05.html
-      - 06 Abstraction & Endgame: modules/06_abstraction_endgame.md
-      - 06 Abstraction interactive lab: demos/abstraction-module-06.html
-      - 07 Heads-Up No-Limit: modules/07_nolimit.md
-      - 07 Push/fold interactive lab: demos/pushfold-module-07.html
-  - Neural era:
-      - 08 Deep CFR: modules/08_deep_cfr.md
-      - 08 Deep CFR training lab: demos/deep-cfr-training-lab.html
-      - 08 Deep CFR reservoir lab: demos/deep-cfr-reservoir-lab.html
-      - 08 Deep CFR strategy compare lab: demos/deep-cfr-strategy-compare.html
-      - 09 Value Nets & Search: modules/09_value_nets_search.md
-      - 09 Belief state explorer: demos/belief-state-explorer.html
-      - 09 Search tree lab: demos/search-tree-lab.html
-      - 09 Value network lab: demos/value-network-lab.html
-  - Hard frontier:
-      - 10 Pot-Limit Omaha: modules/10_plo.md
-      - 10 PLO hand builder: demos/plo-hand-builder.html
-      - 10 PLO combination counter: demos/plo-combination-counter.html
-      - 10 PLO equity lab: demos/plo-equity-lab.html
-      - 10 PLO failure lab: demos/plo-failure-lab.html
-      - 11 Multiplayer: modules/11_multiplayer.md
-      - 11 Multiplayer payoffs lab: demos/multiplayer-payoffs.html
-      - 11 N-player game tree lab: demos/nplayer-game-tree.html
-      - 11 Population arena lab: demos/population-arena.html
-      - 12 Opponent Modelling: modules/12_opponent_modelling.md
-      - 12 Opponent profile lab: demos/opponent-profile-lab.html
-      - 12 Bayesian opponent lab: demos/bayesian-opponent-lab.html
-      - 12 Exploitability-profit frontier: demos/exploitability-profit-frontier.html
-  - Design your own:
-      - 13 Custom Variants: modules/13_variants.md
-      - 13 Variant rules builder lab: demos/variant-rules-builder.html
-      - 13 Variant card lab: demos/variant-card.html
-      - 13 Variant tree estimator lab: demos/variant-tree-estimator.html
-      - 14 Case Studies: modules/14_case_studies.md
-      - 14 Solved ladder lab: demos/solved-ladder.html
-      - 14 Technique selector lab: demos/technique-selector.html
-      - 14 Compute comparison lab: demos/compute-comparison.html
+not_in_nav: |
+  modules/_template.md
+  modules/07_nolimit_plan.md
+  modules/08_deep_cfr_plan.md
+  modules/13_variants_done.md

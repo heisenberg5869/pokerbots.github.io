@@ -1,6 +1,6 @@
 # Pokerbots Curriculum Implementation TODO
 
-This checklist translates `CURRICULUM_PLAN.md` into implementation work for the repository.
+This checklist records the initial implementation priorities. See the [roadmap](../docs/roadmap.md) for current status and the [curriculum plan](../docs/plan.md) for the full design.
 
 ## Current baseline
 
